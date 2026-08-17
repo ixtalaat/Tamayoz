@@ -10,6 +10,9 @@ public class ServiceRequest
 
     public Service? Service { get; set; }
 
+    [StringLength(30)]
+    public string TrackingCode { get; set; } = string.Empty;
+
     [Required(ErrorMessage = "اسم الطالب مطلوب")]
     [StringLength(120, ErrorMessage = "الاسم لا يجب أن يتجاوز 120 حرفًا")]
     public string StudentName { get; set; } = string.Empty;

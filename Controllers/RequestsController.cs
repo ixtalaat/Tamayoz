@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Tamayoz.Models;
 using Tamayoz.Services;
 using Tamayoz.ViewModels;
 
@@ -33,10 +34,11 @@ public class RequestsController(IServiceCatalogService catalog, IRequestManageme
             return View(model);
         }
 
-        var isCreated = await requests.CreateAsync(model);
-        if (isCreated)
+        var trackingCode = await requests.CreateAsync(model);
+        if (trackingCode is not null)
         {
-            return RedirectToAction(nameof(Confirmation));
+            TempData["Success"] = "تم استلام طلبك بنجاح! كود تتبع طلبك هو " + trackingCode;
+            return RedirectToAction(nameof(Confirmation), new { code = trackingCode });
         }
 
         ModelState.AddModelError(nameof(model.ServiceId), "الخدمة غير متاحة حاليًا.");
@@ -46,8 +48,48 @@ public class RequestsController(IServiceCatalogService catalog, IRequestManageme
     }
 
     [HttpGet]
-    public IActionResult Confirmation()
+    public async Task<IActionResult> Confirmation(string? code)
     {
+        if (string.IsNullOrWhiteSpace(code))
+        {
+            return View(model: (ServiceRequest?)null);
+        }
+
+        var request = await requests.GetByTrackingCodeAsync(code);
+        return View(model: request);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Track(string? code, string? phone)
+    {
+        ViewBag.SearchCode = code;
+        ViewBag.SearchPhone = phone;
+        ViewBag.HasSearched = !string.IsNullOrWhiteSpace(code) || !string.IsNullOrWhiteSpace(phone);
+
+        if (!string.IsNullOrWhiteSpace(code))
+        {
+            var singleRequest = await requests.GetByTrackingCodeAsync(code);
+            if (singleRequest is not null)
+            {
+                ViewBag.RequestsList = new List<ServiceRequest> { singleRequest };
+                return View();
+            }
+            ViewBag.NotFound = true;
+            return View();
+        }
+
+        if (!string.IsNullOrWhiteSpace(phone))
+        {
+            var list = await requests.GetByPhoneAsync(phone);
+            if (list.Count > 0)
+            {
+                ViewBag.RequestsList = list;
+                return View();
+            }
+            ViewBag.NotFound = true;
+            return View();
+        }
+
         return View();
     }
 }

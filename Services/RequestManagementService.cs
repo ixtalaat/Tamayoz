@@ -8,12 +8,12 @@ namespace Tamayoz.Services;
 
 public class RequestManagementService(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment) : IRequestManagementService
 {
-    public async Task<bool> CreateAsync(ServiceRequestViewModel model)
+    public async Task<string?> CreateAsync(ServiceRequestViewModel model)
     {
         var isServiceActive = await db.Services.AnyAsync(s => s.Id == model.ServiceId && s.IsActive);
         if (!isServiceActive)
         {
-            return false;
+            return null;
         }
 
         string? attachmentPath = null;
@@ -48,9 +48,12 @@ public class RequestManagementService(ApplicationDbContext db, IWebHostEnvironme
             }
         }
 
+        var trackingCode = await GenerateUniqueTrackingCodeAsync();
+
         var entity = new ServiceRequest
         {
             ServiceId = model.ServiceId,
+            TrackingCode = trackingCode,
             StudentName = model.StudentName,
             StudentEmail = model.StudentEmail,
             StudentPhone = model.StudentPhone,
@@ -64,7 +67,35 @@ public class RequestManagementService(ApplicationDbContext db, IWebHostEnvironme
 
         db.ServiceRequests.Add(entity);
         await db.SaveChangesAsync();
-        return true;
+        return trackingCode;
+    }
+
+    public async Task<ServiceRequest?> GetByTrackingCodeAsync(string trackingCode)
+    {
+        if (string.IsNullOrWhiteSpace(trackingCode))
+        {
+            return null;
+        }
+
+        var normalizedCode = trackingCode.Trim().ToUpperInvariant();
+        return await db.ServiceRequests
+            .Include(r => r.Service)
+            .FirstOrDefaultAsync(r => r.TrackingCode.ToUpper() == normalizedCode);
+    }
+
+    public async Task<IReadOnlyList<ServiceRequest>> GetByPhoneAsync(string phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone))
+        {
+            return Array.Empty<ServiceRequest>();
+        }
+
+        var cleanPhone = phone.Trim().Replace(" ", "").Replace("-", "");
+        return await db.ServiceRequests
+            .Include(r => r.Service)
+            .Where(r => r.StudentPhone.Replace(" ", "").Replace("-", "").Contains(cleanPhone))
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync();
     }
 
     public async Task<IReadOnlyList<ServiceRequest>> GetAllAsync(RequestStatus? status)
@@ -95,6 +126,20 @@ public class RequestManagementService(ApplicationDbContext db, IWebHostEnvironme
 
         await db.SaveChangesAsync();
         return true;
+    }
+
+    private async Task<string> GenerateUniqueTrackingCodeAsync()
+    {
+        while (true)
+        {
+            var randomPart = Random.Shared.Next(10000, 99999);
+            var code = $"TMZ-{randomPart}";
+            var exists = await db.ServiceRequests.AnyAsync(r => r.TrackingCode == code);
+            if (!exists)
+            {
+                return code;
+            }
+        }
     }
 }
 

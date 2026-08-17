@@ -85,7 +85,7 @@
                         }
                         var whatsappMessage = Uri.EscapeDataString($"مرحبًا {item.StudentName}، بخصوص طلبك لخدمة ({item.Service?.Name}) في أكاديمية التميز...");
 
-                        <tr class="request-row" data-search="@item.StudentName @item.StudentEmail @item.StudentPhone @(item.Service?.Name ?? "") @item.Message">
+                        <tr class="request-row" data-search="@item.TrackingCode @item.StudentName @item.StudentEmail @item.StudentPhone @(item.Service?.Name ?? "") @item.Message">
                             <!-- Student Column -->
                             <td>
                                 <div class="d-flex align-items-center gap-3">
@@ -93,6 +93,12 @@
                                         @(string.IsNullOrEmpty(item.StudentName) ? "ط" : item.StudentName.Substring(0, 1))
                                     </div>
                                     <div class="overflow-hidden">
+                                        @if (!string.IsNullOrEmpty(item.TrackingCode))
+                                        {
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace small mb-1 d-inline-block">
+                                                @item.TrackingCode
+                                            </span>
+                                        }
                                         <strong class="d-block text-dark text-truncate">@item.StudentName</strong>
                                         <a href="mailto:@item.StudentEmail" class="d-block text-muted small text-decoration-none text-truncate" dir="ltr">
                                             @item.StudentEmail
