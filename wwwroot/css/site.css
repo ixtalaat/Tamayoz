@@ -1773,6 +1773,72 @@ div:where(.swal2-container) button.swal2-cancel {
   border-color: #20352f !important;
 }
 
+[data-theme="dark"] .admin-message-card,
+[data-bs-theme="dark"] .admin-message-card {
+  background: #111d1a !important;
+  border-color: #223731 !important;
+  color: #eaf4f1 !important;
+}
+
+[data-theme="dark"] .admin-message-card:hover,
+[data-bs-theme="dark"] .admin-message-card:hover {
+  background: #152723 !important;
+  border-color: #2f5247 !important;
+}
+
+[data-theme="dark"] .admin-message-card.is-unread,
+[data-bs-theme="dark"] .admin-message-card.is-unread {
+  background: #182823 !important;
+  border-right: 3.5px solid var(--gold) !important;
+  border-color: #29463d !important;
+}
+
+[data-theme="dark"] .admin-message-card.is-read,
+[data-bs-theme="dark"] .admin-message-card.is-read {
+  background: #101c19 !important;
+  border-color: #1e332d !important;
+}
+
+[data-theme="dark"] .unread-dot,
+[data-bs-theme="dark"] .unread-dot {
+  background-color: var(--gold) !important;
+  box-shadow: 0 0 8px rgba(245, 196, 94, 0.8) !important;
+}
+
+[data-theme="dark"] .table-warning-row td,
+[data-bs-theme="dark"] .table-warning-row td {
+  background-color: #192a24 !important;
+  border-bottom-color: #26433a !important;
+}
+
+[data-theme="dark"] .message-cell,
+[data-bs-theme="dark"] .message-cell {
+  background-color: #111c19 !important;
+  border-color: #223731 !important;
+  color: #c0d8d1 !important;
+}
+
+[data-theme="dark"] .student-avatar-circle,
+[data-bs-theme="dark"] .student-avatar-circle {
+  background: linear-gradient(135deg, #18332c, #22473e) !important;
+  color: var(--gold) !important;
+}
+
+[data-theme="dark"] .modal-content,
+[data-bs-theme="dark"] .modal-content {
+  background-color: #14221f !important;
+  border: 1px solid #28443c !important;
+  color: #eaf4f1 !important;
+}
+
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer,
+[data-bs-theme="dark"] .modal-header,
+[data-bs-theme="dark"] .modal-footer {
+  background-color: #101c19 !important;
+  border-color: #223731 !important;
+}
+
 [data-theme="dark"] .input-group-text,
 [data-bs-theme="dark"] .input-group-text {
   background-color: #14201d !important;
