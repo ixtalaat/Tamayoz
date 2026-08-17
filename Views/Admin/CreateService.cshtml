@@ -1,4 +1,30 @@
 @model Tamayoz.Models.Service
-@{ ViewData["Title"] = "إضافة خدمة"; }
-<div class="form-shell mx-auto"><span class="eyebrow">إدارة الخدمات</span><h1>إضافة خدمة</h1><partial name="_ServiceForm" model="Model" /></div>
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+@{
+    ViewData["Title"] = "إضافة خدمة أكاديمية جديدة";
+}
+
+<partial name="_AdminNav" />
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="admin-panel p-4 p-md-5 bg-white border rounded-4 shadow-sm mb-5">
+            <div class="d-flex align-items-center justify-content-between pb-3 mb-4 border-bottom">
+                <div>
+                    <span class="eyebrow">دليل الخدمات</span>
+                    <h1 class="h3 fw-bold mb-1">إضافة خدمة أكاديمية جديدة</h1>
+                    <p class="text-secondary mb-0">أدخل بيانات الخدمة والشرح الموضح ليتمكن الطلاب من طلبها.</p>
+                </div>
+                <a asp-action="Services" class="btn btn-sm btn-outline-secondary">
+                    ← العودة للخدمات
+                </a>
+            </div>
+
+            <partial name="_ServiceForm" model="Model" />
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

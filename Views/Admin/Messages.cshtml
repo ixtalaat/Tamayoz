@@ -1,3 +1,184 @@
 @model IEnumerable<Tamayoz.Models.ContactMessage>
-@{ ViewData["Title"] = "رسائل التواصل"; }
-<div class="d-flex justify-content-between align-items-center mb-4"><div><span class="eyebrow">إدارة التواصل</span><h1>رسائل الزوار</h1></div><a asp-action="Index">لوحة التحكم</a></div><div class="admin-panel p-0 overflow-hidden"><div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>المرسل</th><th>الرسالة</th><th>التاريخ</th><th></th></tr></thead><tbody>@foreach (var message in Model) { <tr class="@(message.IsRead ? "" : "table-warning")"><td><strong>@message.Name</strong><br/><a href="mailto:@message.Email" dir="ltr">@message.Email</a><br/><small dir="ltr">@message.Phone</small></td><td class="message-cell">@message.Message</td><td><small>@message.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</small></td><td class="text-nowrap">@if (!message.IsRead) { <form asp-action="MarkMessageRead" method="post" class="d-inline"><input type="hidden" name="id" value="@message.Id"/><button class="btn btn-sm btn-outline-primary">تمت القراءة</button></form> }<form asp-action="DeleteMessage" method="post" class="d-inline"><input type="hidden" name="id" value="@message.Id"/><button class="btn btn-sm btn-outline-danger" onclick="return confirm('هل تريد حذف الرسالة؟')">حذف</button></form></td></tr> }</tbody></table></div></div>
+@{
+    ViewData["Title"] = "رسائل واستفسارات الزوار";
+    var messagesList = Model.ToList();
+    var unreadCount = messagesList.Count(m => !m.IsRead);
+    var readCount = messagesList.Count - unreadCount;
+}
+
+<partial name="_AdminNav" />
+
+<!-- Header & Actions -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <span class="eyebrow">إدارة التواصل والدعم</span>
+        <h1 class="h3 fw-bold mb-1">رسائل واستفسارات الزوار</h1>
+        <p class="text-secondary mb-0">متابعة الرسائل الواردة من نموذج "تواصل معنا"، والرد عليها وتحديث حالة قراءتها.</p>
+    </div>
+
+    <!-- Search Input -->
+    <div class="d-flex align-items-center gap-2">
+        <div class="input-group admin-search-group">
+            <span class="input-group-text bg-white border-end-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </span>
+            <input type="text" id="messagesSearchInput" class="form-control border-start-0" placeholder="بحث باسم المرسل أو البريد..." />
+        </div>
+    </div>
+</div>
+
+<!-- Stats Counter -->
+<div class="d-flex gap-2 mb-3">
+    <span class="badge bg-white text-dark border px-3 py-2 rounded-pill">
+        إجمالي الرسائل: <strong>@messagesList.Count</strong>
+    </span>
+    @if (unreadCount > 0)
+    {
+        <span class="badge bg-danger text-white px-3 py-2 rounded-pill">
+            غير مقروءة: <strong>@unreadCount</strong>
+        </span>
+    }
+    else
+    {
+        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill">
+            جميع الرسائل مقروءة ✓
+        </span>
+    }
+</div>
+
+<!-- Messages Table Container -->
+<div class="admin-panel p-0 bg-white border rounded-4 overflow-hidden mb-4 shadow-sm">
+    @if (messagesList.Any())
+    {
+        <div class="table-responsive">
+            <table class="table admin-table align-middle mb-0" id="messagesTable">
+                <thead>
+                    <tr>
+                        <th style="width: 260px;">المرسل</th>
+                        <th>نص الرسالة</th>
+                        <th style="width: 170px;">تاريخ الإرسال</th>
+                        <th style="width: 190px;" class="text-center">الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var message in messagesList)
+                    {
+                        var cleanPhone = message.Phone?.Replace(" ", "").Replace("-", "").Replace("+", "") ?? "";
+                        if (cleanPhone.StartsWith("01") && cleanPhone.Length == 11)
+                        {
+                            cleanPhone = "20" + cleanPhone.Substring(1);
+                        }
+                        else if (!cleanPhone.StartsWith("20") && cleanPhone.Length == 10)
+                        {
+                            cleanPhone = "20" + cleanPhone;
+                        }
+
+                        <tr class="message-row @(message.IsRead ? "" : "table-warning-row")" data-search="@message.Name @message.Email @message.Phone @message.Message">
+                            <!-- Sender -->
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="student-avatar-circle @(message.IsRead ? "" : "border border-2 border-danger")">
+                                        @(string.IsNullOrEmpty(message.Name) ? "ز" : message.Name.Substring(0, 1))
+                                    </div>
+                                    <div class="overflow-hidden">
+                                        <div class="d-flex align-items-center gap-1">
+                                            <strong class="d-block text-dark">@message.Name</strong>
+                                            @if (!message.IsRead)
+                                            {
+                                                <span class="badge bg-danger rounded-pill px-1 py-0" style="font-size: 0.65rem;">جديد</span>
+                                            }
+                                        </div>
+                                        <a href="mailto:@message.Email" class="d-block text-muted small text-decoration-none text-truncate" dir="ltr">
+                                            @message.Email
+                                        </a>
+                                        @if (!string.IsNullOrEmpty(message.Phone))
+                                        {
+                                            <small class="d-block text-secondary" dir="ltr">@message.Phone</small>
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Message Content -->
+                            <td>
+                                <div class="p-2 rounded bg-light border message-cell text-secondary">
+                                    @message.Message
+                                </div>
+                            </td>
+
+                            <!-- Date -->
+                            <td>
+                                <small class="d-block text-dark fw-medium">
+                                    @message.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd")
+                                </small>
+                                <small class="d-block text-muted">
+                                    @message.CreatedAt.ToLocalTime().ToString("hh:mm tt")
+                                </small>
+                            </td>
+
+                            <!-- Actions -->
+                            <td>
+                                <div class="d-flex justify-content-center align-items-center gap-1">
+                                    <a href="mailto:@message.Email" class="btn btn-sm btn-outline-primary py-1 px-2" title="رد بالبريد">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                    </a>
+
+                                    @if (!string.IsNullOrEmpty(cleanPhone))
+                                    {
+                                        <a href="https://wa.me/@cleanPhone" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-success py-1 px-2" title="واتساب">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 1.67c2.2 0 4.26.86 5.82 2.42a8.176 8.176 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.44 0-2.85-.38-4.09-1.11l-.29-.17-3.13.82.84-3.05-.19-.3a8.216 8.216 0 0 1-1.26-4.43c0-4.54 3.7-8.24 8.24-8.24zm4.52 11.53c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.07-.39-2.03-1.25-.75-.67-1.26-1.5-1.41-1.75-.14-.25-.02-.39.11-.51.11-.11.25-.29.38-.44.13-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.13.17 1.78 2.72 4.31 3.81.6.26 1.07.42 1.44.54.61.19 1.16.17 1.6.1.49-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.06-.1-.23-.17-.48-.29z"/></svg>
+                                        </a>
+                                    }
+
+                                    @if (!message.IsRead)
+                                    {
+                                        <form asp-action="MarkMessageRead" method="post" class="d-inline">
+                                            <input type="hidden" name="id" value="@message.Id" />
+                                            <button class="btn btn-sm btn-outline-info py-1 px-2" title="تحديد كمقروءة">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                            </button>
+                                        </form>
+                                    }
+
+                                    <form asp-action="DeleteMessage" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@message.Id" />
+                                        <button class="btn btn-sm btn-outline-danger py-1 px-2" onclick="return confirm('هل تريد حذف هذه الرسالة؟')" title="حذف الرسالة">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <div class="fs-1 text-muted mb-2">📬</div>
+            <h4 class="h5 text-dark fw-bold">صندوق الرسائل فارغ</h4>
+            <p class="text-secondary mb-0">لم تصل أي رسائل من صفحة تواصل معنا حتى الآن.</p>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Real-time table filter for messages
+        document.getElementById('messagesSearchInput')?.addEventListener('input', function (e) {
+            const query = e.target.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('.message-row');
+            rows.forEach(row => {
+                const searchContent = row.getAttribute('data-search')?.toLowerCase() || '';
+                if (searchContent.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    </script>
+}
+

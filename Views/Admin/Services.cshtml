@@ -1,5 +1,183 @@
 @model IEnumerable<Tamayoz.Models.Service>
-@{ ViewData["Title"] = "إدارة الخدمات"; }
-<div class="d-flex justify-content-between align-items-center mb-4"><div><span class="eyebrow">إدارة المنصة</span><h1>الخدمات</h1></div><a class="btn btn-primary" asp-action="CreateService">إضافة خدمة</a></div>
-@if (TempData["Success"] is string success) { <div class="alert alert-success">@success</div> }
-<div class="table-responsive"><table class="table align-middle"><thead><tr><th>الخدمة</th><th>المدة</th><th>السعر</th><th>الحالة</th><th></th></tr></thead><tbody>@foreach (var service in Model) { <tr><td><strong>@service.Name</strong><br/><small class="text-secondary">@service.ShortDescription</small></td><td>@service.EstimatedDuration</td><td>@(service.Price?.ToString("N0") ?? "—")</td><td><span class="badge @(service.IsActive ? "text-bg-success" : "text-bg-secondary")">@(service.IsActive ? "نشطة" : "موقوفة")</span></td><td class="text-nowrap"><a class="btn btn-sm btn-outline-primary" asp-action="EditService" asp-route-id="@service.Id">تعديل</a><form asp-action="DeleteService" method="post" class="d-inline"><input type="hidden" name="id" value="@service.Id"/><button class="btn btn-sm btn-outline-danger" onclick="return confirm('هل تريد حذف الخدمة أو إيقافها؟')">حذف</button></form></td></tr> }</tbody></table></div>
+@{
+    ViewData["Title"] = "إدارة الخدمات الأكاديمية";
+    var servicesList = Model.ToList();
+    var activeCount = servicesList.Count(s => s.IsActive);
+    var inactiveCount = servicesList.Count - activeCount;
+}
+
+<partial name="_AdminNav" />
+
+<!-- Header & Actions -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <span class="eyebrow">كتالوج ودليل الخدمات</span>
+        <h1 class="h3 fw-bold mb-1">الخدمات الأكاديمية</h1>
+        <p class="text-secondary mb-0">إدارة الخدمات المعروضة للطلاب، تعديل الأسعار، والتحكم في ظهورها على الموقع.</p>
+    </div>
+
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+        <!-- Live Search -->
+        <div class="input-group admin-search-group">
+            <span class="input-group-text bg-white border-end-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </span>
+            <input type="text" id="servicesSearchInput" class="form-control border-start-0" placeholder="بحث في الخدمات..." />
+        </div>
+
+        <a class="btn btn-primary d-inline-flex align-items-center gap-2" asp-action="CreateService">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>إضافة خدمة جديدة</span>
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] is string success)
+{
+    <div class="alert alert-success alert-dismissible fade show rounded-3 border-0 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        <div>@success</div>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Stats Overview Bar -->
+<div class="d-flex gap-2 mb-3">
+    <span class="badge bg-white text-dark border px-3 py-2 rounded-pill">
+        إجمالي الخدمات: <strong>@servicesList.Count</strong>
+    </span>
+    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill">
+        الخدمات النشطة: <strong>@activeCount</strong>
+    </span>
+    @if (inactiveCount > 0)
+    {
+        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-3 py-2 rounded-pill">
+            الموقوفة: <strong>@inactiveCount</strong>
+        </span>
+    }
+</div>
+
+<!-- Services Data Grid -->
+<div class="admin-panel p-0 bg-white border rounded-4 overflow-hidden mb-4 shadow-sm">
+    @if (servicesList.Any())
+    {
+        <div class="table-responsive">
+            <table class="table admin-table align-middle mb-0" id="servicesTable">
+                <thead>
+                    <tr>
+                        <th>الخدمة والتفاصيل</th>
+                        <th style="width: 170px;">المدة المتوقعة</th>
+                        <th style="width: 150px;">السعر التقريبي</th>
+                        <th style="width: 120px;">الحالة</th>
+                        <th style="width: 170px;" class="text-center">الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var service in servicesList)
+                    {
+                        <tr class="service-row" data-search="@service.Name @service.ShortDescription @service.Description">
+                            <!-- Service Info -->
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="service-table-icon">
+                                        ✦
+                                    </div>
+                                    <div>
+                                        <strong class="d-block text-dark fs-6">@service.Name</strong>
+                                        <p class="text-secondary small mb-0 text-truncate-2" style="max-width: 420px;">
+                                            @service.ShortDescription
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Estimated Duration -->
+                            <td>
+                                <span class="badge bg-light text-secondary border">
+                                    ⏱ @service.EstimatedDuration
+                                </span>
+                            </td>
+
+                            <!-- Price -->
+                            <td>
+                                @if (service.Price.HasValue && service.Price.Value > 0)
+                                {
+                                    <strong class="text-primary">@service.Price.Value.ToString("N0") <small>ج.م</small></strong>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">حسب متطلبات الطلب</span>
+                                }
+                            </td>
+
+                            <!-- Status -->
+                            <td>
+                                @if (service.IsActive)
+                                {
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                                        ● نشطة
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1">
+                                        موقوفة
+                                    </span>
+                                }
+                            </td>
+
+                            <!-- Actions -->
+                            <td>
+                                <div class="d-flex justify-content-center align-items-center gap-1">
+                                    <a class="btn btn-sm btn-outline-primary py-1 px-2 d-inline-flex align-items-center gap-1" asp-action="EditService" asp-route-id="@service.Id" title="تعديل الخدمة">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                        <span>تعديل</span>
+                                    </a>
+
+                                    <a class="btn btn-sm btn-outline-secondary py-1 px-2" asp-controller="Services" asp-action="Details" asp-route-id="@service.Id" target="_blank" title="معاينة للطلاب">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </a>
+
+                                    <form asp-action="DeleteService" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@service.Id" />
+                                        <button class="btn btn-sm btn-outline-danger py-1 px-2" onclick="return confirm('هل أنت متأكد من رغبتك في إيقاف أو إزالة خدمة (@service.Name)؟')" title="إيقاف أو حذف">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <div class="fs-1 text-muted mb-2">🛠️</div>
+            <h4 class="h5 text-dark fw-bold">لا توجد خدمات مضافة حتى الآن</h4>
+            <p class="text-secondary mb-3">ابدأ بإضافة أول خدمة أكاديمية لتظهر في الكتالوج للطلاب.</p>
+            <a asp-action="CreateService" class="btn btn-primary">إضافة خدمة جديدة</a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Real-time table filter for services
+        document.getElementById('servicesSearchInput')?.addEventListener('input', function (e) {
+            const query = e.target.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('.service-row');
+            rows.forEach(row => {
+                const searchContent = row.getAttribute('data-search')?.toLowerCase() || '';
+                if (searchContent.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    </script>
+}
+

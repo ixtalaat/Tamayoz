@@ -1,2 +1,87 @@
 @model Tamayoz.Models.Service
-<form method="post" class="row g-3"><input asp-for="Id" type="hidden"/><div class="col-md-6"><label asp-for="Name">اسم الخدمة</label><input asp-for="Name" class="form-control"/><span asp-validation-for="Name"></span></div><div class="col-md-6"><label asp-for="EstimatedDuration">المدة المتوقعة</label><input asp-for="EstimatedDuration" class="form-control"/><span asp-validation-for="EstimatedDuration"></span></div><div class="col-12"><label asp-for="ShortDescription">وصف مختصر</label><input asp-for="ShortDescription" class="form-control"/><span asp-validation-for="ShortDescription"></span></div><div class="col-12"><label asp-for="Description">الوصف الكامل</label><textarea asp-for="Description" rows="6" class="form-control"></textarea><span asp-validation-for="Description"></span></div><div class="col-md-6"><label asp-for="Price">السعر (اختياري)</label><input asp-for="Price" type="number" step="0.01" min="0" class="form-control"/></div><div class="col-md-6"><label asp-for="ImageUrl">رابط الصورة (اختياري)</label><input asp-for="ImageUrl" class="form-control" dir="ltr"/></div><div class="col-12 form-check"><input asp-for="IsActive" class="form-check-input"/><label asp-for="IsActive" class="form-check-label">الخدمة متاحة للطلاب</label></div><div class="col-12"><button class="btn btn-primary px-4">حفظ</button><a class="btn btn-link" asp-action="Services">إلغاء</a></div></form>
+
+<form method="post" class="row g-4">
+    <input asp-for="Id" type="hidden" />
+
+    <!-- Section 1: Basic Info -->
+    <div class="col-12">
+        <div class="p-4 bg-light rounded-3 border">
+            <h5 class="fw-bold text-dark mb-3">1. البيانات الأساسية</h5>
+            <div class="row g-3">
+                <div class="col-md-7">
+                    <label asp-for="Name" class="form-label fw-semibold">اسم الخدمة <span class="text-danger">*</span></label>
+                    <input asp-for="Name" class="form-control" placeholder="مثال: مشاريع التخرج والأبحاث الأكاديمية" />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+                <div class="col-md-5">
+                    <label asp-for="EstimatedDuration" class="form-label fw-semibold">المدة التقديرية <span class="text-danger">*</span></label>
+                    <input asp-for="EstimatedDuration" class="form-control" placeholder="مثال: 3 - 5 أيام عمل، أو يُحدد عند مراجعة الطلب" />
+                    <span asp-validation-for="EstimatedDuration" class="text-danger small"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 2: Descriptions -->
+    <div class="col-12">
+        <div class="p-4 bg-light rounded-3 border">
+            <h5 class="fw-bold text-dark mb-3">2. نبذة وتفاصيل الخدمة</h5>
+            <div class="row g-3">
+                <div class="col-12">
+                    <label asp-for="ShortDescription" class="form-label fw-semibold">الوصف المختصر (يظهر في الكروت والقوائم) <span class="text-danger">*</span></label>
+                    <input asp-for="ShortDescription" class="form-control" placeholder="سطر أو سطرين يوضحان جوهر الخدمة..." />
+                    <span asp-validation-for="ShortDescription" class="text-danger small"></span>
+                </div>
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label fw-semibold">الوصف التفصيلي (يظهر في صفحة تفاصيل الخدمة) <span class="text-danger">*</span></label>
+                    <textarea asp-for="Description" rows="6" class="form-control" placeholder="اكتب تفاصيل ما تشمله الخدمة، التخصصات، الأدوات المستخدمة، والخطوات..."></textarea>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 3: Pricing & Options -->
+    <div class="col-12">
+        <div class="p-4 bg-light rounded-3 border">
+            <h5 class="fw-bold text-dark mb-3">3. السعر وإعدادات النشر</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Price" class="form-label fw-semibold">السعر المبدئي (اختياري)</label>
+                    <div class="input-group">
+                        <input asp-for="Price" type="number" step="1" min="0" class="form-control" placeholder="اتركه فارغًا إذا كان السعر حسب المتطلبات" />
+                        <span class="input-group-text bg-white">ج.م (جنيه مصري)</span>
+                    </div>
+                    <span class="text-muted small">إذا تُرِك فارغًا، سيظهر للطالب "حسب متطلبات الطلب".</span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="ImageUrl" class="form-label fw-semibold">رابط صورة أو أيقونة مخصصة (اختياري)</label>
+                    <input asp-for="ImageUrl" class="form-control" dir="ltr" placeholder="https://example.com/image.jpg" />
+                    <span asp-validation-for="ImageUrl" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12 pt-2">
+                    <div class="form-check form-switch custom-admin-switch">
+                        <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch" id="isActiveSwitch" />
+                        <label class="form-check-label fw-bold text-dark" for="isActiveSwitch">
+                            الخدمة نشطة ومتاحة للطلاب حالياً
+                        </label>
+                        <div class="text-muted small">عند إلغاء التفعيل، سيتم إخفاء الخدمة من كتالوج الموقع العام للزوار.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="col-12 d-flex align-items-center gap-3">
+        <button type="submit" class="btn btn-primary px-5 py-2 fw-bold">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            حفظ الخدمة
+        </button>
+        <a class="btn btn-outline-secondary px-4 py-2" asp-action="Services">
+            إلغاء والعودة
+        </a>
+    </div>
+</form>
+

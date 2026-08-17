@@ -1,5 +1,278 @@
 @model Tamayoz.ViewModels.AdminDashboardViewModel
-@{ ViewData["Title"] = "لوحة الإدارة"; }
-<div class="admin-hero d-flex justify-content-between align-items-center flex-wrap gap-3 mb-5"><div><span class="eyebrow">إدارة أكاديمية التميز</span><h1 class="mb-1">مرحبًا بك في لوحة التحكم</h1><p class="text-secondary mb-0">تابع الطلبات والرسائل والخدمات من مكان واحد.</p></div><div class="d-flex gap-2 flex-wrap"><a class="btn btn-outline-primary" asp-action="Services">إدارة الخدمات</a><a class="btn btn-outline-primary" asp-action="Messages">الرسائل <span class="badge text-bg-danger">@Model.UnreadMessages</span></a><a class="btn btn-primary" asp-action="Requests">إدارة الطلبات</a></div></div>
-<section class="row g-3 mb-5"><div class="col-sm-6 col-lg-3"><div class="admin-stat p-4"><span>إجمالي الطلبات</span><strong>@(Model.PendingRequests + Model.InProgressRequests + Model.CompletedRequests)</strong><small>مكتمل: @Model.CompletedRequests</small></div></div><div class="col-sm-6 col-lg-3"><div class="admin-stat p-4"><span>طلبات معلقة</span><strong class="text-warning">@Model.PendingRequests</strong><small>تحتاج إلى متابعة</small></div></div><div class="col-sm-6 col-lg-3"><div class="admin-stat p-4"><span>طلبات قيد التنفيذ</span><strong class="text-primary">@Model.InProgressRequests</strong><small>يعمل عليها الفريق</small></div></div><div class="col-sm-6 col-lg-3"><div class="admin-stat p-4"><span>رسائل جديدة</span><strong class="text-danger">@Model.UnreadMessages</strong><small>من صفحة التواصل</small></div></div></section>
-<section class="row g-4"><div class="col-lg-7"><div class="admin-panel p-4 h-100"><div class="d-flex justify-content-between mb-3"><h2 class="h5 mb-0">أحدث الطلبات</h2><a asp-action="Requests">عرض الكل</a></div>@if (Model.RecentRequests.Any()) { <div class="table-responsive"><table class="table table-borderless align-middle mb-0"><tbody>@foreach (var item in Model.RecentRequests) { <tr><td><strong>@item.StudentName</strong><br/><small class="text-secondary">@item.Service?.Name</small></td><td><small>@item.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd")</small></td><td><span class="badge text-bg-light">@item.Status</span></td></tr> }</tbody></table></div> } else { <p class="text-secondary mb-0">لا توجد طلبات حتى الآن.</p> }</div></div><div class="col-lg-5"><div class="admin-panel p-4 h-100"><div class="d-flex justify-content-between mb-3"><h2 class="h5 mb-0">أحدث الرسائل</h2><a asp-action="Messages">عرض الكل</a></div>@if (Model.RecentMessages.Any()) { @foreach (var item in Model.RecentMessages) { <div class="message-preview @(item.IsRead ? "" : "unread")"><div class="d-flex justify-content-between"><strong>@item.Name</strong><small>@item.CreatedAt.ToLocalTime().ToString("MM/dd")</small></div><p class="text-secondary mb-0 text-truncate">@item.Message</p></div> } } else { <p class="text-secondary mb-0">لا توجد رسائل حتى الآن.</p> }</div></div></section>
+@{
+    ViewData["Title"] = "لوحة التحكم الرئيسية";
+    var totalRequests = Model.PendingRequests + Model.InProgressRequests + Model.CompletedRequests;
+    var completionRate = totalRequests > 0 ? (int)Math.Round((double)Model.CompletedRequests / totalRequests * 100) : 100;
+}
+
+<partial name="_AdminNav" />
+
+<!-- Welcome Banner -->
+<div class="admin-welcome-card p-4 p-lg-4 rounded-4 mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="badge bg-white text-primary fw-semibold px-3 py-1 rounded-pill">
+                    📅 @DateTime.Now.ToString("dddd، dd MMMM yyyy", new System.Globalization.CultureInfo("ar-EG"))
+                </span>
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill">
+                    ● النظام نشط ومستقر
+                </span>
+            </div>
+            <h1 class="h3 fw-bold text-white mb-1">مرحبًا بك في لوحة تحكم أكاديمية التميّز</h1>
+            <p class="text-white-50 mb-0">نظرة عامة ومباشرة على طلبات الطلاب، الخدمات الأكاديمية، والرسائل الجديدة.</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <a class="btn btn-warning text-dark fw-bold d-inline-flex align-items-center gap-2 shadow-sm" asp-action="CreateService">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>إضافة خدمة جديدة</span>
+            </a>
+            <a class="btn btn-outline-light d-inline-flex align-items-center gap-2" asp-action="Requests">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                <span>متابعة الطلبات</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- KPI Stat Cards -->
+<section class="row g-3 g-lg-4 mb-4">
+    <!-- Total Requests -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-kpi-card p-4 rounded-4 bg-white border h-100">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="kpi-icon-box bg-primary-subtle text-primary">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                </div>
+                <span class="badge bg-light text-secondary border">إجمالي العمليات</span>
+            </div>
+            <span class="kpi-label">إجمالي طلبات الطلاب</span>
+            <div class="d-flex align-items-baseline gap-2 my-1">
+                <strong class="kpi-value">@totalRequests</strong>
+                <span class="small text-muted">طلب</span>
+            </div>
+            <div class="mt-3 pt-2 border-top d-flex justify-content-between align-items-center">
+                <small class="text-success fw-medium">مكتمل: @Model.CompletedRequests (@completionRate%)</small>
+                <a asp-action="Requests" class="small text-decoration-none">عرض ←</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Requests -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-kpi-card p-4 rounded-4 bg-white border border-warning-subtle h-100">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="kpi-icon-box bg-warning-subtle text-warning-emphasis">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                </div>
+                @if (Model.PendingRequests > 0)
+                {
+                    <span class="badge bg-warning text-dark fw-bold">يتطلب استجابة</span>
+                }
+                else
+                {
+                    <span class="badge bg-light text-muted border">محدث</span>
+                }
+            </div>
+            <span class="kpi-label">طلبات بانتظار المتابعة</span>
+            <div class="d-flex align-items-baseline gap-2 my-1">
+                <strong class="kpi-value text-warning-emphasis">@Model.PendingRequests</strong>
+                <span class="small text-muted">طلب جديد</span>
+            </div>
+            <div class="mt-3 pt-2 border-top d-flex justify-content-between align-items-center">
+                <small class="text-muted">تحتاج مراجعة وتحديد مدة</small>
+                <a asp-action="Requests" asp-route-status="@Tamayoz.Models.RequestStatus.Pending" class="small text-warning-emphasis fw-semibold text-decoration-none">معاينة ←</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- In Progress Requests -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-kpi-card p-4 rounded-4 bg-white border border-primary-subtle h-100">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="kpi-icon-box bg-info-subtle text-info-emphasis">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
+                </div>
+                <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle">قيد العمل</span>
+            </div>
+            <span class="kpi-label">طلبات قيد التنفيذ</span>
+            <div class="d-flex align-items-baseline gap-2 my-1">
+                <strong class="kpi-value text-primary">@Model.InProgressRequests</strong>
+                <span class="small text-muted">مشروع</span>
+            </div>
+            <div class="mt-3 pt-2 border-top d-flex justify-content-between align-items-center">
+                <small class="text-muted">يعمل عليها الفريق الأكاديمي</small>
+                <a asp-action="Requests" asp-route-status="@Tamayoz.Models.RequestStatus.InProgress" class="small text-primary fw-semibold text-decoration-none">متابعة ←</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unread Messages & Services -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-kpi-card p-4 rounded-4 bg-white border h-100">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="kpi-icon-box bg-danger-subtle text-danger">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                </div>
+                @if (Model.UnreadMessages > 0)
+                {
+                    <span class="badge bg-danger text-white">@Model.UnreadMessages غير مقروءة</span>
+                }
+                else
+                {
+                    <span class="badge bg-success-subtle text-success">تمت قراءة الكل</span>
+                }
+            </div>
+            <span class="kpi-label">استفسارات الزوار</span>
+            <div class="d-flex align-items-baseline gap-2 my-1">
+                <strong class="kpi-value text-danger">@Model.UnreadMessages</strong>
+                <span class="small text-muted">رسالة جديدة</span>
+            </div>
+            <div class="mt-3 pt-2 border-top d-flex justify-content-between align-items-center">
+                <small class="text-muted">الخدمات النشطة: @Model.ActiveServices من @Model.TotalServices</small>
+                <a asp-action="Messages" class="small text-danger fw-semibold text-decoration-none">الرسائل ←</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Data Grid & Feeds -->
+<section class="row g-4">
+    <!-- Recent Requests Column -->
+    <div class="col-lg-7">
+        <div class="admin-panel p-4 rounded-4 bg-white border h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="panel-badge-icon bg-primary text-white">📋</div>
+                    <div>
+                        <h2 class="h5 fw-bold mb-0">أحدث طلبات الخدمات</h2>
+                        <small class="text-secondary">آخر الطلبات المقدمة من الطلاب</small>
+                    </div>
+                </div>
+                <a asp-action="Requests" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1">
+                    <span>عرض كافة الطلبات</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                </a>
+            </div>
+
+            @if (Model.RecentRequests.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table admin-table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>الطالب</th>
+                                <th>الخدمة المطلوبة</th>
+                                <th>التاريخ</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.RecentRequests)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="student-avatar-circle">
+                                                @(string.IsNullOrEmpty(item.StudentName) ? "ط" : item.StudentName.Substring(0, 1))
+                                            </div>
+                                            <div>
+                                                <strong class="d-block text-dark">@item.StudentName</strong>
+                                                <small class="text-muted" dir="ltr">@item.StudentPhone</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border">
+                                            @(item.Service?.Name ?? "خدمة محذوفة")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">@item.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd")</small>
+                                    </td>
+                                    <td>
+                                        @switch (item.Status)
+                                        {
+                                            case Tamayoz.Models.RequestStatus.Pending:
+                                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">معلق</span>
+                                                break;
+                                            case Tamayoz.Models.RequestStatus.InProgress:
+                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">قيد التنفيذ</span>
+                                                break;
+                                            case Tamayoz.Models.RequestStatus.Completed:
+                                                <span class="badge bg-success-subtle text-success border border-success-subtle">مكتمل</span>
+                                                break;
+                                            case Tamayoz.Models.RequestStatus.Cancelled:
+                                                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">ملغي</span>
+                                                break;
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="fs-1 text-muted mb-2">📁</div>
+                    <p class="text-secondary mb-0">لا توجد طلبات واردة حتى الآن.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Recent Messages Column -->
+    <div class="col-lg-5">
+        <div class="admin-panel p-4 rounded-4 bg-white border h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="panel-badge-icon bg-danger text-white">✉️</div>
+                    <div>
+                        <h2 class="h5 fw-bold mb-0">أحدث رسائل التواصل</h2>
+                        <small class="text-secondary">استفسارات الزوار عبر صفحة اتصل بنا</small>
+                    </div>
+                </div>
+                <a asp-action="Messages" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1">
+                    <span>جميع الرسائل</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                </a>
+            </div>
+
+            @if (Model.RecentMessages.Any())
+            {
+                <div class="admin-message-list">
+                    @foreach (var item in Model.RecentMessages)
+                    {
+                        <div class="admin-message-card p-3 rounded-3 mb-2 @(item.IsRead ? "is-read" : "is-unread")">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <div class="d-flex align-items-center gap-2">
+                                    @if (!item.IsRead)
+                                    {
+                                        <span class="unread-dot"></span>
+                                    }
+                                    <strong class="text-dark">@item.Name</strong>
+                                </div>
+                                <small class="text-muted">@item.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</small>
+                            </div>
+                            <p class="text-secondary small mb-2 text-truncate-2">@item.Message</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted" dir="ltr">@item.Email</small>
+                                <a href="mailto:@item.Email" class="btn btn-xs btn-outline-primary py-0 px-2" style="font-size: 0.75rem;">رد عبر البريد</a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="fs-1 text-muted mb-2">📬</div>
+                    <p class="text-secondary mb-0">لا توجد رسائل جديدة.</p>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+

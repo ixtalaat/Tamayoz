@@ -1,3 +1,197 @@
 @model IEnumerable<Tamayoz.Models.ServiceRequest>
-@{ ViewData["Title"] = "إدارة الطلبات"; }
-<div class="d-flex justify-content-between align-items-center mb-4"><h1>طلبات الخدمات</h1><a asp-action="Index">لوحة التحكم</a></div><div class="table-responsive"><table class="table align-middle"><thead><tr><th>الطالب</th><th>الخدمة</th><th>التواصل</th><th>التاريخ</th><th>الحالة</th></tr></thead><tbody>@foreach(var item in Model) { <tr><td><strong>@item.StudentName</strong><br/><small>@item.StudentEmail</small></td><td>@item.Service?.Name</td><td>@item.StudentPhone</td><td>@item.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd")</td><td><form asp-action="UpdateRequestStatus" method="post" class="d-flex gap-2"><input name="id" value="@item.Id" type="hidden"/><select name="status" class="form-select form-select-sm" asp-items="Html.GetEnumSelectList<Tamayoz.Models.RequestStatus>()"></select><button class="btn btn-sm btn-primary">حفظ</button></form></td></tr> }</tbody></table></div>
+@{
+    ViewData["Title"] = "إدارة طلبات الخدمات";
+    var currentStatus = Context.Request.Query["status"].ToString();
+    var allRequests = Model.ToList();
+    var pendingCount = allRequests.Count(r => r.Status == Tamayoz.Models.RequestStatus.Pending);
+    var inProgressCount = allRequests.Count(r => r.Status == Tamayoz.Models.RequestStatus.InProgress);
+    var completedCount = allRequests.Count(r => r.Status == Tamayoz.Models.RequestStatus.Completed);
+    var cancelledCount = allRequests.Count(r => r.Status == Tamayoz.Models.RequestStatus.Cancelled);
+}
+
+<partial name="_AdminNav" />
+
+<!-- Header & Filter Bar -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <span class="eyebrow">متابعة العملاء والطلاب</span>
+        <h1 class="h3 fw-bold mb-1">طلبات الخدمات الأكاديمية</h1>
+        <p class="text-secondary mb-0">عرض ومتابعة كافة الطلبات المقدمة وتحديث حالاتها والتواصل المباشر مع الطلاب.</p>
+    </div>
+
+    <!-- Search Input -->
+    <div class="d-flex align-items-center gap-2">
+        <div class="input-group admin-search-group">
+            <span class="input-group-text bg-white border-end-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </span>
+            <input type="text" id="requestsSearchInput" class="form-control border-start-0" placeholder="بحث باسم الطالب أو الخدمة أو الهاتف..." />
+        </div>
+    </div>
+</div>
+
+<!-- Status Filter Tabs -->
+<div class="admin-filter-bar mb-4 pb-2">
+    <div class="d-flex gap-2 flex-wrap">
+        <a asp-action="Requests" asp-route-status="" class="btn btn-sm filter-pill @(string.IsNullOrEmpty(currentStatus) ? "active" : "")">
+            <span>الكل</span>
+            <span class="badge rounded-pill bg-dark-subtle text-dark">@allRequests.Count</span>
+        </a>
+        <a asp-action="Requests" asp-route-status="@Tamayoz.Models.RequestStatus.Pending" class="btn btn-sm filter-pill filter-pending @(currentStatus == "Pending" ? "active" : "")">
+            <span>معلقة / جديدة</span>
+            <span class="badge rounded-pill bg-warning text-dark">@pendingCount</span>
+        </a>
+        <a asp-action="Requests" asp-route-status="@Tamayoz.Models.RequestStatus.InProgress" class="btn btn-sm filter-pill filter-inprogress @(currentStatus == "InProgress" ? "active" : "")">
+            <span>قيد التنفيذ</span>
+            <span class="badge rounded-pill bg-primary text-white">@inProgressCount</span>
+        </a>
+        <a asp-action="Requests" asp-route-status="@Tamayoz.Models.RequestStatus.Completed" class="btn btn-sm filter-pill filter-completed @(currentStatus == "Completed" ? "active" : "")">
+            <span>مكتملة</span>
+            <span class="badge rounded-pill bg-success text-white">@completedCount</span>
+        </a>
+        <a asp-action="Requests" asp-route-status="@Tamayoz.Models.RequestStatus.Cancelled" class="btn btn-sm filter-pill filter-cancelled @(currentStatus == "Cancelled" ? "active" : "")">
+            <span>ملغية</span>
+            <span class="badge rounded-pill bg-secondary text-white">@cancelledCount</span>
+        </a>
+    </div>
+</div>
+
+<!-- Requests Cards & Table Container -->
+<div class="admin-panel p-0 bg-white border rounded-4 overflow-hidden mb-4 shadow-sm">
+    @if (allRequests.Any())
+    {
+        <div class="table-responsive">
+            <table class="table admin-table align-middle mb-0" id="requestsTable">
+                <thead>
+                    <tr>
+                        <th style="width: 280px;">الطالب وبيانات التواصل</th>
+                        <th>الخدمة والتفاصيل</th>
+                        <th style="width: 140px;">التاريخ والتفضيل</th>
+                        <th style="width: 220px;">حالة الطلب والتحديث</th>
+                        <th style="width: 130px;" class="text-center">تواصل فوري</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in allRequests)
+                    {
+                        var cleanPhone = item.StudentPhone.Replace(" ", "").Replace("-", "").Replace("+", "");
+                        if (cleanPhone.StartsWith("01") && cleanPhone.Length == 11)
+                        {
+                            cleanPhone = "20" + cleanPhone.Substring(1);
+                        }
+                        else if (!cleanPhone.StartsWith("20") && cleanPhone.Length == 10)
+                        {
+                            cleanPhone = "20" + cleanPhone;
+                        }
+                        var whatsappMessage = Uri.EscapeDataString($"مرحبًا {item.StudentName}، بخصوص طلبك لخدمة ({item.Service?.Name}) في أكاديمية التميز...");
+
+                        <tr class="request-row" data-search="@item.StudentName @item.StudentEmail @item.StudentPhone @(item.Service?.Name ?? "") @item.Message">
+                            <!-- Student Column -->
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="student-avatar-circle">
+                                        @(string.IsNullOrEmpty(item.StudentName) ? "ط" : item.StudentName.Substring(0, 1))
+                                    </div>
+                                    <div class="overflow-hidden">
+                                        <strong class="d-block text-dark text-truncate">@item.StudentName</strong>
+                                        <a href="mailto:@item.StudentEmail" class="d-block text-muted small text-decoration-none text-truncate" dir="ltr">
+                                            @item.StudentEmail
+                                        </a>
+                                        <a href="tel:@item.StudentPhone" class="d-block text-primary small text-decoration-none fw-semibold" dir="ltr">
+                                            @item.StudentPhone
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Service & Message Column -->
+                            <td>
+                                <div class="mb-1">
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-semibold">
+                                        @(item.Service?.Name ?? "خدمة محذوفة")
+                                    </span>
+                                </div>
+                                <div class="request-message-bubble p-2 rounded-2 bg-light border small text-secondary">
+                                    <div class="message-text">@item.Message</div>
+                                </div>
+                            </td>
+
+                            <!-- Date & Contact Method -->
+                            <td>
+                                <small class="d-block text-dark fw-medium">
+                                    @item.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd")
+                                </small>
+                                <small class="d-block text-muted">
+                                    @item.CreatedAt.ToLocalTime().ToString("hh:mm tt")
+                                </small>
+                                @if (!string.IsNullOrEmpty(item.PreferredContactMethod))
+                                {
+                                    <span class="badge bg-light text-secondary border mt-1 small">
+                                        مفضل: @item.PreferredContactMethod
+                                    </span>
+                                }
+                            </td>
+
+                            <!-- Status Change Form -->
+                            <td>
+                                <form asp-action="UpdateRequestStatus" method="post" class="d-flex flex-column gap-2">
+                                    <input name="id" value="@item.Id" type="hidden" />
+                                    <div class="d-flex align-items-center gap-1">
+                                        <select name="status" class="form-select form-select-sm status-select" onchange="this.form.submit()">
+                                            <option value="Pending" selected="@(item.Status == Tamayoz.Models.RequestStatus.Pending)">🟡 معلق / جديد</option>
+                                            <option value="InProgress" selected="@(item.Status == Tamayoz.Models.RequestStatus.InProgress)">🔵 قيد التنفيذ</option>
+                                            <option value="Completed" selected="@(item.Status == Tamayoz.Models.RequestStatus.Completed)">🟢 مكتمل</option>
+                                            <option value="Cancelled" selected="@(item.Status == Tamayoz.Models.RequestStatus.Cancelled)">⚪ ملغي</option>
+                                        </select>
+                                    </div>
+                                    @if (item.UpdatedAt.HasValue)
+                                    {
+                                        <small class="text-muted" style="font-size: 0.7rem;">
+                                            آخر تحديث: @item.UpdatedAt.Value.ToLocalTime().ToString("MM/dd HH:mm")
+                                        </small>
+                                    }
+                                </form>
+                            </td>
+
+                            <!-- WhatsApp Direct Action -->
+                            <td class="text-center">
+                                <a href="https://wa.me/@cleanPhone?text=@whatsappMessage" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-success d-inline-flex align-items-center gap-1 py-1 px-2" title="مراسلة عبر واتساب">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 1.67c2.2 0 4.26.86 5.82 2.42a8.176 8.176 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.44 0-2.85-.38-4.09-1.11l-.29-.17-3.13.82.84-3.05-.19-.3a8.216 8.216 0 0 1-1.26-4.43c0-4.54 3.7-8.24 8.24-8.24zm4.52 11.53c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.07-.39-2.03-1.25-.75-.67-1.26-1.5-1.41-1.75-.14-.25-.02-.39.11-.51.11-.11.25-.29.38-.44.13-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.13.17 1.78 2.72 4.31 3.81.6.26 1.07.42 1.44.54.61.19 1.16.17 1.6.1.49-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.06-.1-.23-.17-.48-.29z"/></svg>
+                                    <span>واتساب</span>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <div class="fs-1 text-muted mb-2">📋</div>
+            <h4 class="h5 text-dark fw-bold">لا توجد طلبات في هذا القسم</h4>
+            <p class="text-secondary mb-3">لم يتم العثور على أي طلبات مطابقة للتصفية الحالية.</p>
+            <a asp-action="Requests" asp-route-status="" class="btn btn-sm btn-outline-primary">عرض كافة الطلبات</a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Real-time table filter for requests
+        document.getElementById('requestsSearchInput')?.addEventListener('input', function (e) {
+            const query = e.target.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('.request-row');
+            rows.forEach(row => {
+                const searchContent = row.getAttribute('data-search')?.toLowerCase() || '';
+                if (searchContent.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    </script>
+}
+

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Tamayoz.Areas.Identity.Pages.Account;
 
-public class LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger) : PageModel
+public class LoginModel(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, ILogger<LoginModel> logger) : PageModel
 {
     [BindProperty] public InputModel Input { get; set; } = new();
     public string? ReturnUrl { get; set; }
@@ -20,9 +20,23 @@ public class LoginModel(SignInManager<IdentityUser> signInManager, ILogger<Login
     {
         ReturnUrl = returnUrl ?? Url.Content("~/");
         if (!ModelState.IsValid) return Page();
-        var result = await signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-        if (result.Succeeded) { logger.LogInformation("User logged in."); return LocalRedirect(ReturnUrl); }
+
+        var user = await userManager.FindByEmailAsync(Input.Email) ?? await userManager.FindByNameAsync(Input.Email);
+        if (user is not null)
+        {
+            var isPassValid = await userManager.CheckPasswordAsync(user, Input.Password);
+            if (isPassValid)
+            {
+                await signInManager.SignInAsync(user, isPersistent: Input.RememberMe);
+                logger.LogInformation("Admin user logged in successfully.");
+                return LocalRedirect(ReturnUrl);
+            }
+        }
+
         ModelState.AddModelError(string.Empty, "تعذر تسجيل الدخول. تحقق من البريد الإلكتروني وكلمة المرور.");
         return Page();
     }
+
+
 }
+
