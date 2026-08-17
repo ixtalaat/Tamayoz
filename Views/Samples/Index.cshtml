@@ -1,0 +1,165 @@
+@model IReadOnlyList<Tamayoz.Models.WorkSample>
+@{
+    ViewData["Title"] = "معرض نماذج الأعمال والعينات الأكاديمية";
+    ViewData["MetaDescription"] = "استعرض نماذج وعينات حقيقية من أبحاث، مشاريع تخرج، وعروض تقديمية نفذتها أكاديمية التميز بجودة وتوثيق علمي معتمد.";
+    ViewData["MetaKeywords"] = "نماذج أبحاث, عينات مشاريع تخرج, نماذج باوربوينت, أكواد برمجية, أكاديمية التميز";
+
+    var currentCategory = ViewBag.CurrentCategory as string ?? "الكل";
+    var categories = ViewBag.Categories as IReadOnlyList<string> ?? new List<string>();
+}
+
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">الرئيسية</a></li>
+        <li class="breadcrumb-item active" aria-current="page">معرض نماذج الأعمال</li>
+    </ol>
+</nav>
+
+<!-- Hero Banner -->
+<div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm mb-5 text-center position-relative overflow-hidden">
+    <div class="mb-3">
+        <img src="~/logo.svg" alt="شعار أكاديمية التميز" width="60" height="60" class="rounded-3 shadow-sm"
+             asp-append-version="true" />
+    </div>
+    <span class="eyebrow">جودة موثقة ومخرجات معتمدة</span>
+    <h1 class="display-6 fw-bold text-dark mt-2 mb-3">معرض نماذج الأعمال والمخرجات الأكاديمية</h1>
+    <p class="lead text-secondary mx-auto mb-4" style="max-width: 780px;">
+        استعرض عينات ونماذج حقيقية توضح دقة التنسيق المنهجي، جودة التوثيق الأكاديمي، وهيكلية المخرجات لمختلف التخصصات
+        قبل بدء طلبك.
+    </p>
+
+    <!-- Anonymity Security Notice -->
+    <div
+        class="d-inline-flex align-items-center gap-2 p-2 px-3 rounded-pill bg-light border small text-secondary shadow-sm">
+        <span>🛡️</span>
+        <span><strong>ضمان الخصوصية:</strong> جميع العينات المعروضة منزوعة الهوية ومشفرة بنسبة 100% حفاظاً على سرية
+            بيانات الطلاب.</span>
+        </div>
+    </div>
+
+    <!-- Category Filters -->
+    <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap mb-5">
+        <a asp-action="Index" class="filter-pill @(currentCategory == "الكل" ? "active" : "")">
+            الكل
+        </a>
+        @foreach (var cat in categories)
+        {
+            <a asp-action="Index" asp-route-category="@cat" class="filter-pill @(currentCategory == cat ? "active" : "")">
+                @cat
+            </a>
+        }
+    </div>
+
+    <!-- Samples Grid -->
+    @if (!Model.Any())
+    {
+        <div class="p-5 bg-white rounded-4 border text-center text-muted mb-5 shadow-sm">
+            <div class="fs-1 mb-2">📁</div>
+            <h4 class="fw-bold text-dark">لا توجد نماذج مضافة في هذا القسم حالياً</h4>
+            <p class="small text-secondary mb-4">يتم تحديث معرض الأعمال بصفة دورية بنماذج وعينات جديدة.</p>
+            <a asp-action="Index" class="btn btn-primary px-4 py-2">عرض جميع النماذج</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4 mb-5">
+            @foreach (var sample in Model)
+            {
+                var fallbackThumb = !string.IsNullOrWhiteSpace(sample.ThumbnailUrl)
+                    ? sample.ThumbnailUrl
+                    : "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=800&q=80";
+
+                var whatsappSampleMsg = Uri.EscapeDataString($"مرحبًا أكاديمية التميز، أود طلب عمل أكاديمي مماثل لنموذج ({sample.Title}) في قسم ({sample.Category}).");
+
+                <div class="col-md-6 col-lg-6">
+                    <div
+                        class="sample-card bg-white rounded-4 border shadow-sm h-100 d-flex flex-column overflow-hidden position-relative">
+                        <!-- Image Preview Header -->
+                        <div class="sample-img-container position-relative overflow-hidden"
+                             style="height: 220px; background-color: #f3f8f6;">
+                            <img src="@fallbackThumb" alt="@sample.Title" class="w-100 h-100 object-fit-cover sample-thumb-img"
+                                 loading="lazy" />
+                            <div class="position-absolute top-0 start-0 m-3 d-flex gap-2">
+                                <span class="badge bg-primary px-3 py-2 rounded-pill small fw-semibold shadow-sm">
+                                    @sample.Category
+                                </span>
+                            </div>
+                            <div class="position-absolute top-0 end-0 m-3">
+                                <span class="badge bg-dark bg-opacity-75 text-white px-2 py-1 rounded-pill small font-monospace">
+                                    📄 @sample.FileType
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Body -->
+                        <div class="p-4 d-flex flex-column flex-grow-1">
+                            <h3 class="h5 fw-bold text-dark mb-2">@sample.Title</h3>
+                            <p class="text-secondary small mb-4" style="line-height: 1.8;">
+                                @sample.Description
+                            </p>
+
+                            <!-- Specs Pills -->
+                            <div class="d-flex align-items-center gap-2 flex-wrap mb-4 mt-auto">
+                                @if (!string.IsNullOrEmpty(sample.PagesOrSlidesCount))
+                                {
+                                    <span class="badge bg-light text-dark border px-2 py-1 small">
+                                        📑 @sample.PagesOrSlidesCount
+                                    </span>
+                                }
+                                @if (!string.IsNullOrEmpty(sample.CitationStyle))
+                                {
+                                    <span class="badge bg-light text-primary border px-2 py-1 small">
+                                        🔖 توثيق @sample.CitationStyle
+                                    </span>
+                                }
+                                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 small">
+                                    ✓ خلو من الانتحال 100%
+                                </span>
+                            </div>
+
+                            <!-- Card Actions -->
+                            <div class="d-flex gap-2 flex-wrap pt-3 border-top justify-content-between align-items-center">
+                                @if (!string.IsNullOrEmpty(sample.FileUrl))
+                                {
+                                    <a href="@sample.FileUrl" target="_blank" download
+                                       class="btn btn-sm btn-outline-primary fw-semibold d-inline-flex align-items-center gap-1">
+                                        <span>📥</span> تحميل العينة
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">🔒 عينة استعراضية داخلية</span>
+                                }
+
+                                <a href="https://wa.me/201020086745?text=@whatsappSampleMsg" target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="btn btn-sm btn-primary fw-bold d-inline-flex align-items-center gap-1">
+                                    <span>طلب عمل مماثل</span>
+                                    <span>←</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Bottom Call to Action -->
+    <div class="p-4 p-md-5 rounded-4 bg-primary text-white text-center shadow mb-5">
+        <h2 class="h3 fw-bold mb-2">هل لديك متطلبات أو خطة بحث خاصة وتريد تنفيذها بنفس المعايير؟</h2>
+        <p class="text-white text-opacity-75 mx-auto mb-4" style="max-width: 600px;">
+            أرسل تفاصيل مشروعك أو تكليفك الجامعي وسيقوم فريقنا الأكاديمي بتقديم خطة عمل متكاملة مع ضمان الجودة والالتزام
+            بالمواعيد.
+        </p>
+        <div class="d-flex justify-content-center flex-wrap gap-3">
+            <a asp-controller="Services" asp-action="Index" class="btn btn-light text-primary fw-bold px-4 py-2">
+                طلب خدمة جديدة الآن ←
+            </a>
+            <a href="https://wa.me/201020086745?text=مرحبًا%20أكاديمية%20التميز،%20أود%20طلب%20خدمة%20أكاديمية"
+               target="_blank" rel="noopener noreferrer" class="btn btn-outline-light fw-semibold px-4 py-2">
+                استفسار مباشر عبر واتساب
+            </a>
+        </div>
+    </div>

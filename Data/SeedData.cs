@@ -98,6 +98,66 @@ public static class SeedData
 
             await db.SaveChangesAsync();
         }
+
+        if (!await db.WorkSamples.AnyAsync())
+        {
+            db.WorkSamples.AddRange(
+                new WorkSample
+                {
+                    Title = "نموذج بحث أكاديمي وتوثيق مراجع (دراسة تسويقية)",
+                    Category = "أبحاث علمية",
+                    Description = "عينة بحثية توضح أسلوب الصياغة الأكاديمية الدقيقة، توثيق المراجع بنظام APA 7th Edition، التنسيق المنهجي، وقائمة المصادر الحديثة.",
+                    ThumbnailUrl = "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=800&q=80",
+                    FileType = "PDF / Word",
+                    PagesOrSlidesCount = "24 صفحة",
+                    CitationStyle = "APA 7th",
+                    IsActive = true,
+                    DisplayOrder = 1,
+                    CreatedAt = DateTime.UtcNow.AddDays(-12)
+                },
+                new WorkSample
+                {
+                    Title = "مشروع تخرج نظام تصنيف ذكي بالتعلم العميق (AI & Python)",
+                    Category = "حلول برمجية",
+                    Description = "عينة من هيكلية الكود البرمجي الموثق، ملفات الشرح التفصيلي للـ Architecture، والـ Data Pipeline مع نتائج الفحص ودقة النموذج.",
+                    ThumbnailUrl = "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80",
+                    FileType = "Python / ZIP",
+                    PagesOrSlidesCount = "كود + تقرير 35 صفحة",
+                    CitationStyle = "IEEE",
+                    IsActive = true,
+                    DisplayOrder = 2,
+                    CreatedAt = DateTime.UtcNow.AddDays(-10)
+                },
+                new WorkSample
+                {
+                    Title = "عرض تقديمي تفاعلي وتصميم بصري لمناقشة تخرج (Master Defense)",
+                    Category = "عروض تقديمية",
+                    Description = "تصميم PowerPoint أنيق واحترافي يعتمد التسلسل البصري للأفكار، الإنفوجرافيك، والجداول التوضيحية الجاهزة للمناقشة المباشرة.",
+                    ThumbnailUrl = "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=800&q=80",
+                    FileType = "PowerPoint / PDF",
+                    PagesOrSlidesCount = "22 شريحة تفاعلية",
+                    CitationStyle = "Harvard",
+                    IsActive = true,
+                    DisplayOrder = 3,
+                    CreatedAt = DateTime.UtcNow.AddDays(-8)
+                },
+                new WorkSample
+                {
+                    Title = "مخططات هندسية معمارية ورسومات تنفيذية AutoCAD",
+                    Category = "تصميم هندسي",
+                    Description = "نموذج للمساقط الأفقية والواجهات والتفاصيل الإنشائية التنفيذية مع جداول الكميات والرموز الهندسية المعتمدة.",
+                    ThumbnailUrl = "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80",
+                    FileType = "AutoCAD / DWG / PDF",
+                    PagesOrSlidesCount = "8 لوحات تنفيذية",
+                    CitationStyle = "معايير هندسية",
+                    IsActive = true,
+                    DisplayOrder = 4,
+                    CreatedAt = DateTime.UtcNow.AddDays(-5)
+                }
+            );
+
+            await db.SaveChangesAsync();
+        }
     }
 
     private static Service Create(string name, string shortDescription, string description)

@@ -50,3 +50,5 @@ wwwroot/images/services/*
 !wwwroot/images/services/.gitkeep
 wwwroot/uploads/requests/*
 !wwwroot/uploads/requests/.gitkeep
+wwwroot/uploads/samples/*
+!wwwroot/uploads/samples/.gitkeep

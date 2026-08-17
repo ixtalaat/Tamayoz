@@ -1,0 +1,200 @@
+@model IReadOnlyList<Tamayoz.Models.WorkSample>
+@{
+    ViewData["Title"] = "إدارة معرض نماذج الأعمال والعينات";
+}
+
+<partial name="_AdminNav" />
+
+<!-- Header Controls -->
+<div class="bg-white rounded-4 border shadow-sm p-4 mb-4">
+    <div
+        class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 pb-3 border-bottom mb-3">
+        <div>
+            <h1 class="h4 fw-bold text-dark mb-1">معرض نماذج الأعمال والعينات</h1>
+            <p class="text-secondary small mb-0">إدارة النماذج التوضيحية والأبحاث النموذجية المعروضة للطلاب والزوار.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="CreateSample"
+               class="btn btn-primary fw-bold d-inline-flex align-items-center gap-1 shadow-sm">
+                <span>+ إضافة نموذج عمل جديد</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Search Box -->
+    <div class="row g-3 align-items-center">
+        <div class="col-md-6">
+            <div class="input-group admin-search-group" style="max-width: 360px;">
+                <span class="input-group-text bg-white">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </span>
+                <input type="text" id="sampleSearchInput" class="form-control"
+                       placeholder="بحث بعنوان النموذج أو القسم..." />
+            </div>
+        </div>
+        <div class="col-md-6 text-md-end text-muted small">
+            إجمالي النماذج المضافة: <strong class="text-dark">@Model.Count</strong>
+        </div>
+    </div>
+</div>
+
+<!-- Samples Table Card -->
+<div class="bg-white rounded-4 border shadow-sm p-4">
+    @if (!Model.Any())
+    {
+        <div class="p-5 text-center text-muted">
+            <div class="fs-1 mb-2">📁</div>
+            <h5 class="fw-bold text-dark">لا توجد أي نماذج أعمال مضافة حتى الآن</h5>
+            <p class="small mb-3">أضف نماذج أبحاث، مشاريع تخرج، أو عروض تقديمية لتظهر للطلاب في المعرض العام.</p>
+            <a asp-action="CreateSample" class="btn btn-primary px-4 py-2">+ إضافة أول نموذج</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table admin-table align-middle">
+                <thead>
+                    <tr>
+                        <th style="min-width: 260px;">النموذج والغلاف</th>
+                        <th style="min-width: 140px;">القسم والتصنيف</th>
+                        <th style="min-width: 140px;">نوع الملف والمواصفات</th>
+                        <th style="min-width: 120px;">حالة الظهور</th>
+                        <th class="text-end" style="min-width: 180px;">الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="samplesTableBody">
+                    @foreach (var item in Model)
+                    {
+                        var thumb = !string.IsNullOrWhiteSpace(item.ThumbnailUrl)
+                            ? item.ThumbnailUrl
+                            : "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=400&q=80";
+
+                        <tr class="sample-row" data-search="@item.Title @item.Category @item.Description @item.FileType">
+                            <!-- Title & Thumb -->
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div style="width: 54px; height: 42px; border-radius: 8px; overflow: hidden; background: #f0f0f0; flex-shrink: 0;"
+                                         class="border">
+                                        <img src="@thumb" alt="@item.Title"
+                                             style="width: 100%; height: 100%; object-fit: cover;"
+                                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=400&q=80';" />
+                                    </div>
+                                    <div class="overflow-hidden">
+                                        <strong class="d-block text-dark text-truncate"
+                                                style="max-width: 320px;">@item.Title</strong>
+                                        <p class="text-secondary small mb-0 text-truncate" style="max-width: 320px;">
+                                            @item.Description</p>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <!-- Category -->
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                        @item.Category
+                                    </span>
+                                </td>
+
+                                <!-- File & Specs -->
+                                <td>
+                                    <span class="badge bg-light text-dark border font-monospace small mb-1 d-inline-block">
+                                        📄 @item.FileType
+                                    </span>
+                                    @if (!string.IsNullOrEmpty(item.PagesOrSlidesCount))
+                                    {
+                                        <div class="text-muted small">@item.PagesOrSlidesCount</div>
+                                    }
+                                </td>
+
+                                <!-- Active Toggle -->
+                                <td>
+                                    <form asp-action="ToggleSampleActive" asp-route-id="@item.Id" method="post" class="d-inline">
+                                        <button type="submit"
+                                                class="badge border @(item.IsActive ? "bg-success text-white" : "bg-light text-muted") p-2 rounded-pill fw-semibold text-decoration-none"
+                                                title="اضغط لتبديل التفعيل">
+                                            @(item.IsActive ? "✓ نشط بالمعرض" : "✕ معطل")
+                                        </button>
+                                    </form>
+                                </td>
+
+                                <!-- Actions -->
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end gap-1 flex-wrap">
+                                        @if (!string.IsNullOrEmpty(item.FileUrl))
+                                        {
+                                            <a href="@item.FileUrl" target="_blank" download
+                                               class="btn btn-sm btn-outline-secondary px-2 py-1" title="معاينة الملف">
+                                                <span>📥</span>
+                                            </a>
+                                        }
+                                        <a asp-action="EditSample" asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-primary px-2 py-1" title="تعديل النموذج">
+                                            <span>✏️</span> تعديل
+                                        </a>
+                                        <form asp-action="DeleteSample" asp-route-id="@item.Id" method="post"
+                                              class="d-inline delete-form">
+                                            <button type="button" class="btn btn-sm btn-outline-danger px-2 py-1 delete-sample-btn"
+                                                    title="حذف النموذج">
+                                                <span>🗑</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    @section Scripts {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Live Search Filter
+                const searchInput = document.getElementById('sampleSearchInput');
+                const rows = document.querySelectorAll('.sample-row');
+
+                if (searchInput) {
+                    searchInput.addEventListener('input', function (e) {
+                        const query = e.target.value.toLowerCase().trim();
+                        rows.forEach(row => {
+                            const text = row.getAttribute('data-search').toLowerCase();
+                            row.style.display = text.includes(query) ? '' : 'none';
+                        });
+                    });
+                }
+
+                // SweetAlert2 Delete Confirmation
+                document.querySelectorAll('.delete-sample-btn').forEach(btn => {
+                    btn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        const form = this.closest('form');
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                title: 'هل أنت متأكد من حذف هذا النموذج؟',
+                                text: 'سيتم حذف النموذج وملفاته من المعرض العام.',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#dc3545',
+                                cancelButtonColor: '#6c757d',
+                                confirmButtonText: 'نعم، احذف',
+                                cancelButtonText: 'إلغاء'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    form.submit();
+                                }
+                            });
+                        } else {
+                            if (confirm('هل أنت متأكد من حذف هذا النموذج؟')) {
+                                form.submit();
+                            }
+                        }
+                    });
+                });
+            });
+        </script>
+    }

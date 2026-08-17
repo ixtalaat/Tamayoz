@@ -21,6 +21,7 @@ builder.Services.AddScoped<IRequestManagementService, RequestManagementService>(
 builder.Services.AddScoped<IContactMessageService, ContactMessageService>();
 builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 builder.Services.AddScoped<ITestimonialService, TestimonialService>();
+builder.Services.AddScoped<IWorkSampleService, WorkSampleService>();
 
 var app = builder.Build();
 

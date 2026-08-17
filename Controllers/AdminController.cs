@@ -14,6 +14,7 @@ public class AdminController(
     IRequestManagementService requests,
     IContactMessageService messages,
     ITestimonialService testimonials,
+    IWorkSampleService workSamples,
     UserManager<IdentityUser> userManager,
     SignInManager<IdentityUser> signInManager,
     IWebHostEnvironment webHostEnvironment) : Controller
@@ -189,6 +190,89 @@ public class AdminController(
         ViewBag.ApprovedFilter = approved;
         var list = await testimonials.GetAllForAdminAsync(approved);
         return View(list);
+    }
+
+    public async Task<IActionResult> Samples()
+    {
+        var list = await workSamples.GetAllForAdminAsync();
+        return View(list);
+    }
+
+    [HttpGet]
+    public IActionResult CreateSample()
+    {
+        return View(new WorkSample());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateSample(WorkSample model, IFormFile? thumbnailFile, IFormFile? sampleFile)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        await workSamples.CreateAsync(model, thumbnailFile, sampleFile);
+        TempData["Success"] = "تمت إضافة نموذج العمل بنجاح إلى المعرض.";
+        return RedirectToAction(nameof(Samples));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EditSample(int id)
+    {
+        var sample = await workSamples.GetByIdAsync(id);
+        if (sample is null)
+        {
+            return NotFound();
+        }
+
+        return View(sample);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditSample(int id, WorkSample model, IFormFile? thumbnailFile, IFormFile? sampleFile)
+    {
+        if (id != model.Id)
+        {
+            return NotFound();
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var isUpdated = await workSamples.UpdateAsync(model, thumbnailFile, sampleFile);
+        if (!isUpdated)
+        {
+            return NotFound();
+        }
+
+        TempData["Success"] = "تم تحديث نموذج العمل بنجاح.";
+        return RedirectToAction(nameof(Samples));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteSample(int id)
+    {
+        var isDeleted = await workSamples.DeleteAsync(id);
+        if (isDeleted)
+        {
+            TempData["Success"] = "تم حذف النموذج بنجاح من المعرض.";
+        }
+        return RedirectToAction(nameof(Samples));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ToggleSampleActive(int id)
+    {
+        await workSamples.ToggleActiveAsync(id);
+        TempData["Success"] = "تم تغيير حالة ظهور النموذج في المعرض.";
+        return RedirectToAction(nameof(Samples));
     }
 
     [HttpPost]

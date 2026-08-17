@@ -21,6 +21,7 @@ public class SitemapController(IServiceCatalogService catalog) : Controller
         AddUrl(root, ns, $"{baseUrl}/", "1.0", "weekly", DateTime.UtcNow);
         AddUrl(root, ns, $"{baseUrl}/Home/About", "0.8", "monthly", DateTime.UtcNow);
         AddUrl(root, ns, $"{baseUrl}/Services", "0.9", "daily", DateTime.UtcNow);
+        AddUrl(root, ns, $"{baseUrl}/Samples", "0.85", "weekly", DateTime.UtcNow);
         AddUrl(root, ns, $"{baseUrl}/Requests/Track", "0.7", "monthly", DateTime.UtcNow);
         AddUrl(root, ns, $"{baseUrl}/Contact", "0.7", "monthly", DateTime.UtcNow);
         AddUrl(root, ns, $"{baseUrl}/Home/Privacy", "0.5", "yearly", DateTime.UtcNow);

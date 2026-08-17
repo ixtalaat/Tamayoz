@@ -1,0 +1,127 @@
+@model Tamayoz.Models.WorkSample
+
+<form method="post" enctype="multipart/form-data" class="row g-4">
+    <input asp-for="Id" type="hidden" />
+
+    <!-- Section 1: Basic Info -->
+    <div class="col-12">
+        <div class="p-4 bg-light rounded-3 border">
+            <h5 class="fw-bold text-dark mb-3">1. البيانات الأساسية للنموذج</h5>
+            <div class="row g-3">
+                <div class="col-md-7">
+                    <label asp-for="Title" class="form-label fw-semibold">عنوان النموذج أو العينة <span
+                        class="text-danger">*</span></label>
+                        <input asp-for="Title" class="form-control"
+                               placeholder="مثال: نموذج بحث أكاديمي وتوثيق مراجع (دراسة تسويقية)" />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-5">
+                        <label asp-for="Category" class="form-label fw-semibold">التصنيف أو القسم <span
+                            class="text-danger">*</span></label>
+                            <input asp-for="Category" list="categoriesList" class="form-control"
+                                   placeholder="اختر أو اكتب التصنيف..." />
+                            <datalist id="categoriesList">
+                                <option value="أبحاث علمية" />
+                                <option value="مشاريع تخرج" />
+                                <option value="عروض تقديمية" />
+                                <option value="حلول برمجية" />
+                                <option value="رسائل ماجستير" />
+                                <option value="تصميم هندسي" />
+                            </datalist>
+                            <span asp-validation-for="Category" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="Description" class="form-label fw-semibold">الوصف ومحتويات العينة <span
+                                class="text-danger">*</span></label>
+                                <textarea asp-for="Description" rows="4" class="form-control"
+                                          placeholder="اكتب نبذة عن العينة، المنهجية، والمخرجات المرفقة..."></textarea>
+                                <span asp-validation-for="Description" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Specs & Metadata -->
+                <div class="col-12">
+                    <div class="p-4 bg-light rounded-3 border">
+                        <h5 class="fw-bold text-dark mb-3">2. المواصفات ونوع الملف</h5>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label asp-for="FileType" class="form-label fw-semibold">صيغة الملف (File Type)</label>
+                                <input asp-for="FileType" class="form-control"
+                                       placeholder="مثال: PDF / Word / PowerPoint / Python" />
+                                <span asp-validation-for="FileType" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="PagesOrSlidesCount" class="form-label fw-semibold">حجم العمل (الصفحات /
+                                    الشرائح)</label>
+                                    <input asp-for="PagesOrSlidesCount" class="form-control" placeholder="مثال: 24 صفحة أو 20 شريحة" />
+                                    <span asp-validation-for="PagesOrSlidesCount" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="CitationStyle" class="form-label fw-semibold">أسلوب التوثيق (إن وجد)</label>
+                                    <input asp-for="CitationStyle" class="form-control" placeholder="مثال: APA 7th / IEEE / Harvard" />
+                                    <span asp-validation-for="CitationStyle" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: File Uploads & Cover Image -->
+                    <div class="col-12">
+                        <div class="p-4 bg-light rounded-3 border">
+                            <h5 class="fw-bold text-dark mb-3">3. غلاف النموذج والملف المرفق للتحميل</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">رفع صورة غلاف النموذج (Thumbnail)</label>
+                                    <input type="file" name="thumbnailFile" accept="image/*" class="form-control" id="thumbFileInput" />
+                                    <span class="text-muted small d-block mt-1">صورة تعبيرية أو لقطة من العمل تظهر كغلاف في
+                                        المعرض.</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">رفع ملف العينة المرفق (PDF أو ZIP أو Document)</label>
+                                        <input type="file" name="sampleFile" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,.rar"
+                                               class="form-control" />
+                                        <span class="text-muted small d-block mt-1">ملف العينة القابل للتحميل المباشر للزوار
+                                            (اختياري).</span>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label asp-for="ThumbnailUrl" class="form-label fw-semibold small">أو رابط صورة غلاف خارجية
+                                                (URL)</label>
+                                                <input asp-for="ThumbnailUrl" class="form-control" dir="ltr"
+                                                       placeholder="https://example.com/image.jpg" />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label asp-for="FileUrl" class="form-label fw-semibold small">أو مسار ملف سابق (URL)</label>
+                                                <input asp-for="FileUrl" class="form-control" dir="ltr" placeholder="/uploads/samples/file.pdf" />
+                                            </div>
+
+                                            <div class="col-md-6 pt-2">
+                                                <label asp-for="DisplayOrder" class="form-label fw-semibold">ترتيب الظهور في المعرض</label>
+                                                <input asp-for="DisplayOrder" type="number" class="form-control" />
+                                            </div>
+
+                                            <div class="col-md-6 pt-4">
+                                                <div class="form-check form-switch custom-admin-switch">
+                                                    <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch"
+                                                           id="sampleIsActiveSwitch" />
+                                                    <label class="form-check-label fw-bold text-dark" for="sampleIsActiveSwitch">
+                                                        النموذج نشط ويظهر في المعرض العام للزوار
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="col-12 d-flex align-items-center gap-3">
+                                    <button type="submit" class="btn btn-primary px-5 py-2 fw-bold">
+                                        حفظ النموذج
+                                    </button>
+                                    <a class="btn btn-outline-secondary px-4 py-2" asp-action="Samples">
+                                        إلغاء والعودة
+                                    </a>
+                                </div>
+                            </form>
