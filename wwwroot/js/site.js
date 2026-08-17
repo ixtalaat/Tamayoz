@@ -243,3 +243,59 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
+
+    // 6. Floating Quick Contact Action Hub Handler
+    document.addEventListener('DOMContentLoaded', function () {
+        const hubContainer = document.getElementById('floatingContactHub');
+        const hubTrigger = document.getElementById('hubMainTrigger');
+        const hubPopover = document.getElementById('contactHubPopover');
+        const closeHubBtn = document.getElementById('closeHubBtn');
+
+        if (!hubContainer || !hubTrigger || !hubPopover) return;
+
+        function toggleHub(show) {
+            const isCurrentlyOpen = hubPopover.classList.contains('is-open');
+            const shouldOpen = show !== undefined ? show : !isCurrentlyOpen;
+
+            if (shouldOpen) {
+                hubPopover.style.display = 'block';
+                // Trigger transition in next tick
+                setTimeout(() => hubPopover.classList.add('is-open'), 10);
+                hubTrigger.classList.add('is-active');
+            } else {
+                hubPopover.classList.remove('is-open');
+                hubTrigger.classList.remove('is-active');
+                setTimeout(() => {
+                    if (!hubPopover.classList.contains('is-open')) {
+                        hubPopover.style.display = 'none';
+                    }
+                }, 250);
+            }
+        }
+
+        hubTrigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+            toggleHub();
+        });
+
+        if (closeHubBtn) {
+            closeHubBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                toggleHub(false);
+            });
+        }
+
+        // Close on outside click
+        document.addEventListener('click', function (e) {
+            if (!hubContainer.contains(e.target) && hubPopover.classList.contains('is-open')) {
+                toggleHub(false);
+            }
+        });
+
+        // Close on ESC key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && hubPopover.classList.contains('is-open')) {
+                toggleHub(false);
+            }
+        });
+    });
