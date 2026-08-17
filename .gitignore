@@ -44,3 +44,7 @@ secrets.json
 # OS files
 .DS_Store
 Thumbs.db
+
+# User uploaded files & media
+wwwroot/images/services/*
+!wwwroot/images/services/.gitkeep
