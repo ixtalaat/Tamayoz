@@ -1,3 +1,86 @@
 @model IEnumerable<Tamayoz.Models.Service>
-@{ ViewData["Title"] = "الخدمات"; }
-<header class="page-heading text-center mb-5"><span class="eyebrow">خدماتنا</span><h1>اختر ما يدفعك للأمام</h1><p>تفاصيل واضحة وخطوات بسيطة لتنفيذ طلبك.</p></header><div class="row g-4">@foreach (var service in Model) { <div class="col-md-6 col-lg-4"><article class="service-card h-100 p-4"><div class="service-icon">✦</div><h2 class="h4 mt-4">@service.Name</h2><p class="text-secondary">@service.ShortDescription</p><p class="small text-secondary">⏱ @service.EstimatedDuration</p>@if(service.Price.HasValue){<strong>@service.Price.Value.ToString("N0") ج.م</strong>}<a class="stretched-link" asp-action="Details" asp-route-id="@service.Id">التفاصيل</a></article></div> }</div>
+@{
+    ViewData["Title"] = "دليل الخدمات الأكاديمية والطلابية";
+}
+
+<!-- Services Catalog Header -->
+<section class="hero rounded-4 p-4 p-md-5 mb-5 text-center">
+    <span class="eyebrow">دليل الخدمات الأكاديمية</span>
+    <h1 class="display-5 fw-bold mt-2">اختر الخدمة المناسبة لتفوقك</h1>
+    <p class="lead mx-auto mb-4">
+        نقدم باقة متكاملة من الخدمات الأكاديمية والبحثية والبرمجية لطلاب الجامعات والدراسات العليا بأعلى معايير الجودة والالتزام.
+    </p>
+
+    <div class="d-flex justify-content-center">
+        <div class="input-group" style="max-width: 480px;">
+            <span class="input-group-text bg-white border-end-0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </span>
+            <input type="text" id="publicServicesSearch" class="form-control border-start-0 py-2" placeholder="ابحث عن بحث، أسايمنت، مشروع تخرج، برمجة..." />
+        </div>
+    </div>
+</section>
+
+<!-- Services Grid -->
+<div class="row g-4 mb-5" id="servicesGrid">
+    @foreach (var service in Model)
+    {
+        var whatsappMsg = Uri.EscapeDataString($"مرحبًا، أود الاستفسار عن خدمة {service.Name}");
+
+        <div class="col-md-6 col-lg-4 service-grid-item" data-search="@service.Name @service.ShortDescription @service.Description">
+            <article class="service-card h-100 p-4 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="service-icon">✦</div>
+                        <span class="badge bg-light text-secondary border">
+                            ⏱ @service.EstimatedDuration
+                        </span>
+                    </div>
+
+                    <h2 class="h5 fw-bold text-dark mb-2">@service.Name</h2>
+                    <p class="text-secondary small mb-4" style="line-height: 1.7;">
+                        @service.ShortDescription
+                    </p>
+                </div>
+
+                <div class="pt-3 border-top mt-auto">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="small text-muted">السعر التقديري:</span>
+                        @if (service.Price.HasValue && service.Price.Value > 0)
+                        {
+                            <strong class="text-primary fs-6">@service.Price.Value.ToString("N0") <small>ج.م</small></strong>
+                        }
+                        else
+                        {
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle small">حسب المتطلبات</span>
+                        }
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a class="btn btn-primary btn-sm py-2" asp-action="Details" asp-route-id="@service.Id">
+                            عرض التفاصيل وطلب الخدمة ←
+                        </a>
+                    </div>
+                </div>
+            </article>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('publicServicesSearch')?.addEventListener('input', function (e) {
+            const query = e.target.value.toLowerCase().trim();
+            const items = document.querySelectorAll('.service-grid-item');
+            items.forEach(item => {
+                const searchContent = item.getAttribute('data-search')?.toLowerCase() || '';
+                if (searchContent.includes(query)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    </script>
+}
+
