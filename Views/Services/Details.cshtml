@@ -2,6 +2,23 @@
 @{
     ViewData["Title"] = Model.Name;
     var whatsappMsg = Uri.EscapeDataString($"مرحبًا أكاديمية التميز، أود الاستفسار عن خدمة ({Model.Name}) وطلب تفاصيل عنها.");
+
+    // Determine high-resolution contextual example image
+    string exampleImageUrl = !string.IsNullOrWhiteSpace(Model.ImageUrl)
+        ? Model.ImageUrl
+        : (Model.Name.Contains("برمج") || Model.Name.Contains("كود") || Model.Name.Contains("ذكاء") || Model.Name.Contains("حلول")
+            ? "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80"
+            : Model.Name.Contains("عرض") || Model.Name.Contains("بوربوينت") || Model.Name.Contains("برزنتيشن") || Model.Name.Contains("سلايد")
+                ? "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1200&q=80"
+                : Model.Name.Contains("هندس") || Model.Name.Contains("أوتوكاد") || Model.Name.Contains("مونتاج") || Model.Name.Contains("تصميم")
+                    ? "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80"
+                    : Model.Name.Contains("ماجستير") || Model.Name.Contains("دكتوراه") || Model.Name.Contains("رسائل") || Model.Name.Contains("أطروحة")
+                        ? "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1200&q=80"
+                        : Model.Name.Contains("تخرج") || Model.Name.Contains("أسايمنت") || Model.Name.Contains("مشروع") || Model.Name.Contains("واجب")
+                            ? "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80"
+                            : "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1200&q=80");
+
+    string fallbackSvg = "data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450' viewBox='0 0 800 450'%3E%3Crect fill='%23e6f2ee' width='800' height='450'/%3E%3Ctext fill='%23175f55' font-family='sans-serif' font-size='24' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle'%3Eأكاديمية التميز - نموذج توضيحي للخدمة%3C/text%3E%3C/svg%3E";
 }
 
 <!-- Breadcrumb -->
@@ -17,6 +34,27 @@
     <!-- Main Service Content -->
     <div class="col-lg-8">
         <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm h-100">
+            <!-- Example / Featured Service Image -->
+            <div class="service-detail-image-container position-relative overflow-hidden rounded-4 mb-4 border shadow-sm">
+                <img src="@exampleImageUrl"
+                     alt="@Model.Name - نموذج توضيحي"
+                     class="service-detail-featured-img w-100"
+                     loading="lazy"
+                     onerror="this.onerror=null; this.src='@fallbackSvg';" />
+
+                <div class="service-image-badge-wrapper position-absolute bottom-0 start-0 end-0 p-3 p-md-4 d-flex justify-content-between align-items-end flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-dark bg-opacity-75 text-white backdrop-blur px-3 py-2 rounded-pill small fw-semibold d-inline-flex align-items-center gap-1">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                            صورة ونموذج توضيحي للخدمة
+                        </span>
+                    </div>
+                    <span class="badge bg-primary px-3 py-2 rounded-pill small fw-bold">
+                        جودة أكاديمية معتمدة 100%
+                    </span>
+                </div>
+            </div>
+
             <span class="eyebrow">خدمة أكاديمية معتمدة</span>
             <h1 class="display-6 fw-bold text-dark mt-2 mb-3">@Model.Name</h1>
             <p class="lead text-secondary mb-4 pb-3 border-bottom">
@@ -26,6 +64,28 @@
             <h3 class="h5 fw-bold text-dark mb-3">تفاصيل ومميزات الخدمة:</h3>
             <div class="service-description text-secondary mb-5" style="font-size: 1.05rem; line-height: 2.1;">
                 @Model.Description
+            </div>
+
+            <!-- Deliverables & Work Sample Box -->
+            <div class="service-sample-showcase p-3 p-md-4 rounded-4 bg-light border mb-5">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <span class="service-icon" style="width: 32px; height: 32px; font-size: 0.9rem;">✨</span>
+                    <h4 class="h6 fw-bold text-dark mb-0">المخرجات ونموذج التسليم المعتمد:</h4>
+                </div>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-white rounded-3 border h-100">
+                            <div class="fw-bold text-dark small mb-1">📄 ملفات كاملة بصيغ متعددة</div>
+                            <div class="text-muted small">تسليم بصيغ Word المفتوحة وPDF المنسقة أو ملفات الأكواد والمشاريع.</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-white rounded-3 border h-100">
+                            <div class="fw-bold text-dark small mb-1">🔍 توثيق علمي وخلو من الانتحال</div>
+                            <div class="text-muted small">اعتماد المراجع الأكاديمية الدقيقة (APA / IEEE / Harvard) مع فحص أصالة.</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Guarantees Banner -->
