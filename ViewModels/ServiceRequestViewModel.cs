@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace Tamayoz.ViewModels;
 
@@ -26,5 +27,7 @@ public class ServiceRequestViewModel
     public string Message { get; set; } = string.Empty;
 
     public string? PreferredContactMethod { get; set; }
+
+    public IFormFile? AttachmentFile { get; set; }
 }
 

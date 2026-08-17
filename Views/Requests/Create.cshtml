@@ -27,7 +27,7 @@
                 <p class="text-secondary mb-0">املأ بيانات التواصل وشرح مختصر لمتطلبات طلبك وسيتواصل معك المشرف المختص فورًا.</p>
             </div>
 
-            <form method="post" class="row g-4">
+            <form method="post" enctype="multipart/form-data" class="row g-4">
                 <input asp-for="ServiceId" type="hidden" />
                 <input asp-for="ServiceName" type="hidden" />
 
@@ -61,8 +61,47 @@
 
                 <div class="col-12">
                     <label asp-for="Message" class="form-label fw-semibold">تفاصيل ومتطلبات الطلب <span class="text-danger">*</span></label>
-                    <textarea asp-for="Message" class="form-control" rows="5" placeholder="اكتب عنوان البحث أو موضوع المشروع، التخصص الدراسي، الموعد النهائي للتسليم وأي تعليمات خاصة..."></textarea>
+                    <textarea asp-for="Message" class="form-control" rows="4" placeholder="اكتب عنوان البحث أو موضوع المشروع، التخصص الدراسي، الموعد النهائي للتسليم وأي تعليمات خاصة..."></textarea>
                     <span asp-validation-for="Message" class="text-danger small"></span>
+                </div>
+
+                <!-- Attachment Upload Dropzone -->
+                <div class="col-12">
+                    <label class="form-label fw-semibold d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <span class="d-flex align-items-center gap-1">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                            إرفاق ملفات أو تكليف الجامعة (اختياري)
+                        </span>
+                        <span class="badge bg-light text-secondary border fw-normal">الحد الأقصى 25 ميجابايت</span>
+                    </label>
+
+                    <div class="file-upload-zone p-4 text-center rounded-4 border border-2 border-dashed bg-light position-relative" id="dropZoneContainer" style="cursor: pointer; transition: all 0.25s ease;">
+                        <input asp-for="AttachmentFile" type="file" id="attachmentInput" class="position-absolute top-0 start-0 w-100 h-100 opacity-0" style="cursor: pointer; z-index: 5;" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.rar,.txt,.jpg,.jpeg,.png" />
+
+                        <div id="uploadPrompt">
+                            <div class="mb-2 text-primary">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17 8 12 3 7 8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                            </div>
+                            <strong class="d-block text-dark mb-1 fs-6">اضغط لاختيار ملف أو اسحبه وأفلته هنا</strong>
+                            <span class="text-muted small d-block">يدعم مستندات Word، ملفات PDF، عروض PowerPoint، الأكواد البرمجية، والأرشيف المضغوط (ZIP/RAR)</span>
+                        </div>
+
+                        <div id="uploadPreview" style="display: none; position: relative; z-index: 10;" class="p-3 bg-white rounded-3 border d-flex align-items-center justify-content-between text-start">
+                            <div class="d-flex align-items-center gap-3 overflow-hidden">
+                                <div class="p-2 bg-light rounded-3 text-primary fs-4 flex-shrink-0">📎</div>
+                                <div class="text-truncate">
+                                    <strong class="d-block text-dark small text-truncate" id="fileNameDisplay">file.pdf</strong>
+                                    <span class="text-muted small" id="fileSizeDisplay">0 KB</span>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-danger flex-shrink-0" id="clearFileBtn">إلغاء الملف</button>
+                        </div>
+                    </div>
+                    <span asp-validation-for="AttachmentFile" class="text-danger small"></span>
                 </div>
 
                 <div class="col-12">
@@ -87,5 +126,54 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fileInput = document.getElementById('attachmentInput');
+            const dropZone = document.getElementById('dropZoneContainer');
+            const promptView = document.getElementById('uploadPrompt');
+            const previewView = document.getElementById('uploadPreview');
+            const fileNameDisplay = document.getElementById('fileNameDisplay');
+            const fileSizeDisplay = document.getElementById('fileSizeDisplay');
+            const clearBtn = document.getElementById('clearFileBtn');
+
+            function formatBytes(bytes, decimals = 2) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const dm = decimals < 0 ? 0 : decimals;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+            }
+
+            if (fileInput) {
+                fileInput.addEventListener('change', function (e) {
+                    const file = e.target.files && e.target.files[0];
+                    if (file) {
+                        fileNameDisplay.textContent = file.name;
+                        fileSizeDisplay.textContent = formatBytes(file.size);
+                        promptView.style.display = 'none';
+                        previewView.style.display = 'flex';
+                        dropZone.classList.add('border-primary', 'bg-white');
+                        dropZone.classList.remove('bg-light');
+                    }
+                });
+
+                fileInput.addEventListener('dragenter', () => dropZone.classList.add('border-primary', 'bg-white'));
+                fileInput.addEventListener('dragleave', () => dropZone.classList.remove('border-primary'));
+            }
+
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (fileInput) fileInput.value = '';
+                    promptView.style.display = 'block';
+                    previewView.style.display = 'none';
+                    dropZone.classList.remove('border-primary', 'bg-white');
+                    dropZone.classList.add('bg-light');
+                });
+            }
+        });
+    </script>
 }
 

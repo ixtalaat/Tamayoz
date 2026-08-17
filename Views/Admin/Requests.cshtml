@@ -114,6 +114,34 @@
                                 <div class="request-message-bubble p-2 rounded-2 bg-light border small text-secondary">
                                     <div class="message-text">@item.Message</div>
                                 </div>
+                                @if (!string.IsNullOrEmpty(item.AttachmentPath))
+                                {
+                                    var ext = System.IO.Path.GetExtension(item.AttachmentFileName ?? "").ToLowerInvariant();
+                                    var fileIcon = ext switch {
+                                        ".pdf" => "📕",
+                                        ".doc" or ".docx" => "📘",
+                                        ".ppt" or ".pptx" => "📙",
+                                        ".zip" or ".rar" => "📦",
+                                        ".jpg" or ".png" or ".jpeg" => "🖼️",
+                                        _ => "📎"
+                                    };
+                                    string sizeDisplay = item.AttachmentSize.HasValue
+                                        ? (item.AttachmentSize.Value > 1024 * 1024
+                                            ? $"{(item.AttachmentSize.Value / (1024.0 * 1024.0)):F1} MB"
+                                            : $"{(item.AttachmentSize.Value / 1024.0):F0} KB")
+                                        : "";
+
+                                    <div class="mt-2">
+                                        <a href="@item.AttachmentPath" target="_blank" download="@item.AttachmentFileName" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 py-1 px-2 text-decoration-none shadow-sm" title="تحميل أو معاينة الملف المرفق">
+                                            <span>@fileIcon</span>
+                                            <span class="text-truncate" style="max-width: 180px;">@(item.AttachmentFileName ?? "تحميل المرفق")</span>
+                                            @if (!string.IsNullOrEmpty(sizeDisplay))
+                                            {
+                                                <span class="badge bg-primary-subtle text-primary ms-1" style="font-size: 0.68rem;">@sizeDisplay</span>
+                                            }
+                                        </a>
+                                    </div>
+                                }
                             </td>
 
                             <!-- Date & Contact Method -->

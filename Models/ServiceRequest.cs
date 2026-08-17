@@ -31,6 +31,14 @@ public class ServiceRequest
     [StringLength(40)]
     public string? PreferredContactMethod { get; set; }
 
+    [StringLength(500)]
+    public string? AttachmentPath { get; set; }
+
+    [StringLength(255)]
+    public string? AttachmentFileName { get; set; }
+
+    public long? AttachmentSize { get; set; }
+
     public RequestStatus Status { get; set; } = RequestStatus.Pending;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
