@@ -1,14 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Tamayoz.Data;
+using Tamayoz.Services;
 
 namespace Tamayoz.Controllers;
-public class ServicesController(ApplicationDbContext db) : Controller
+public class ServicesController(IServiceCatalogService services) : Controller
 {
-    public async Task<IActionResult> Index() => View(await db.Services.Where(s => s.IsActive).OrderByDescending(s => s.CreatedAt).ToListAsync());
-    public async Task<IActionResult> Details(int id)
-    {
-        var service = await db.Services.FirstOrDefaultAsync(s => s.Id == id && s.IsActive);
-        return service is null ? NotFound() : View(service);
-    }
+    public async Task<IActionResult> Index() => View(await services.GetActiveAsync());
+    public async Task<IActionResult> Details(int id) => await services.GetActiveByIdAsync(id) is { } service ? View(service) : NotFound();
 }

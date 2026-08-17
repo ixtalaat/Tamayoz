@@ -1,16 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
-using Tamayoz.Data;
 using Tamayoz.Models;
+using Tamayoz.Services;
 
 namespace Tamayoz.Controllers;
-public class ContactController(ApplicationDbContext db) : Controller
+public class ContactController(IContactMessageService messages) : Controller
 {
     public IActionResult Index() => View();
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Index(ContactMessage model)
     {
         if (!ModelState.IsValid) return View(model);
-        db.ContactMessages.Add(model); await db.SaveChangesAsync();
+        await messages.CreateAsync(model);
         TempData["Success"] = "تم إرسال رسالتك بنجاح. سنتواصل معك قريبًا.";
         return RedirectToAction(nameof(Index));
     }

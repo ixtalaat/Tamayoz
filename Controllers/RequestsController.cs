@@ -1,28 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Tamayoz.Data;
-using Tamayoz.Models;
+using Tamayoz.Services;
 using Tamayoz.ViewModels;
 
 namespace Tamayoz.Controllers;
-public class RequestsController(ApplicationDbContext db) : Controller
+public class RequestsController(IServiceCatalogService catalog, IRequestManagementService requests) : Controller
 {
     [HttpGet]
-    public async Task<IActionResult> Create(int serviceId)
-    {
-        var service = await db.Services.FirstOrDefaultAsync(s => s.Id == serviceId && s.IsActive);
-        return service is null ? NotFound() : View(new ServiceRequestViewModel { ServiceId = service.Id, ServiceName = service.Name });
-    }
+    public async Task<IActionResult> Create(int serviceId) => await catalog.GetActiveByIdAsync(serviceId) is { } service
+        ? View(new ServiceRequestViewModel { ServiceId = service.Id, ServiceName = service.Name }) : NotFound();
 
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ServiceRequestViewModel model)
     {
-        var service = await db.Services.FirstOrDefaultAsync(s => s.Id == model.ServiceId && s.IsActive);
-        if (service is null) ModelState.AddModelError(nameof(model.ServiceId), "الخدمة غير متاحة حاليًا.");
-        if (!ModelState.IsValid) { model.ServiceName = service?.Name; return View(model); }
-        db.ServiceRequests.Add(new ServiceRequest { ServiceId = model.ServiceId, StudentName = model.StudentName, StudentEmail = model.StudentEmail, StudentPhone = model.StudentPhone, Message = model.Message, PreferredContactMethod = model.PreferredContactMethod });
-        await db.SaveChangesAsync();
-        return RedirectToAction(nameof(Confirmation));
+        if (!ModelState.IsValid) { model.ServiceName = (await catalog.GetActiveByIdAsync(model.ServiceId))?.Name; return View(model); }
+        if (await requests.CreateAsync(model)) return RedirectToAction(nameof(Confirmation));
+        ModelState.AddModelError(nameof(model.ServiceId), "الخدمة غير متاحة حاليًا.");
+        model.ServiceName = (await catalog.GetActiveByIdAsync(model.ServiceId))?.Name;
+        return View(model);
     }
     public IActionResult Confirmation() => View();
 }
