@@ -1,0 +1,223 @@
+@model IReadOnlyList<Tamayoz.Models.Testimonial>
+@{
+    ViewData["Title"] = "إدارة آراء وتقييمات الطلاب";
+    var approvedFilter = ViewBag.ApprovedFilter as bool?;
+    var totalCount = Model.Count;
+    var pendingCount = Model.Count(t => !t.IsApproved);
+    var approvedCount = Model.Count(t => t.IsApproved);
+}
+
+<partial name="_AdminNav" />
+
+<!-- Page Title & Stats Summary -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="p-3 bg-white rounded-3 border d-flex align-items-center gap-3 shadow-sm">
+            <div class="kpi-icon-box bg-primary-subtle text-primary fs-4">⭐</div>
+            <div>
+                <span class="text-muted small d-block">إجمالي التقييمات</span>
+                <strong class="h4 fw-bold text-dark mb-0">@totalCount</strong>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="p-3 bg-white rounded-3 border d-flex align-items-center gap-3 shadow-sm">
+            <div class="kpi-icon-box bg-warning-subtle text-warning fs-4">⏳</div>
+            <div>
+                <span class="text-muted small d-block">بانتظار المراجعة والاعتماد</span>
+                <strong class="h4 fw-bold text-warning mb-0">@pendingCount</strong>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="p-3 bg-white rounded-3 border d-flex align-items-center gap-3 shadow-sm">
+            <div class="kpi-icon-box bg-success-subtle text-success fs-4">✓</div>
+            <div>
+                <span class="text-muted small d-block">التقييمات المعتمدة المنشورة</span>
+                <strong class="h4 fw-bold text-success mb-0">@approvedCount</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Table Card -->
+<div class="bg-white rounded-4 border shadow-sm p-4">
+    <!-- Controls Header -->
+    <div
+        class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 pb-3 border-bottom mb-4">
+        <!-- Filter Tabs -->
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <a asp-action="Testimonials" class="filter-pill @(!approvedFilter.HasValue ? "active" : "")">
+                <span>الكل</span>
+                <span class="badge rounded-pill bg-light text-dark">@totalCount</span>
+            </a>
+            <a asp-action="Testimonials" asp-route-approved="false"
+               class="filter-pill @(approvedFilter == false ? "active" : "")">
+                <span>بانتظار الاعتماد</span>
+                @if (pendingCount > 0)
+                {
+                    <span class="badge rounded-pill bg-warning text-dark">@pendingCount</span>
+                }
+            </a>
+            <a asp-action="Testimonials" asp-route-approved="true"
+               class="filter-pill @(approvedFilter == true ? "active" : "")">
+                <span>المعتمدة المنشورة</span>
+                <span class="badge rounded-pill bg-light text-dark">@approvedCount</span>
+            </a>
+        </div>
+
+        <!-- Search Input -->
+        <div class="input-group admin-search-group" style="max-width: 320px;">
+            <span class="input-group-text bg-white">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </span>
+            <input type="text" id="reviewSearchInput" class="form-control" placeholder="بحث باسم الطالب أو التخصص..." />
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="p-5 text-center text-muted">
+            <div class="fs-1 mb-2">⭐</div>
+            <h5 class="fw-bold text-dark">لا توجد أي تقييمات في هذا القسم</h5>
+            <p class="small mb-0">عندما يقوم الطلاب بإرسال تقييماتهم من الموقع ستظهر هنا للمراجعة والاعتماد.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table admin-table align-middle">
+                <thead>
+                    <tr>
+                        <th style="min-width: 220px;">الطالب والتخصص</th>
+                        <th style="min-width: 140px;">التقييم والخدمة</th>
+                        <th style="min-width: 320px;">نص الرأي والتجربة</th>
+                        <th style="min-width: 140px;">الحالة وتاريخ الإرسال</th>
+                        <th class="text-end" style="min-width: 160px;">الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="reviewsTableBody">
+                    @foreach (var item in Model)
+                    {
+                        <tr class="review-row @(!item.IsApproved ? "table-warning-row" : "")"
+                            data-search="@item.StudentName @item.AcademicDegree @item.ServiceName @item.Comment">
+                            <td>
+                                <strong class="d-block text-dark">@item.StudentName</strong>
+                                <span class="text-muted small">@item.AcademicDegree</span>
+                            </td>
+                            <td>
+                                <div class="text-warning mb-1" style="letter-spacing: 2px;">
+                                    @for (int i = 0; i < item.Rating; i++)
+                                    {
+                                        <span>★</span>
+                                    }
+                                </div>
+                                @if (!string.IsNullOrEmpty(item.ServiceName))
+                                {
+                                    <span class="badge bg-light text-secondary border small">@item.ServiceName</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="small text-secondary" style="line-height: 1.6; max-width: 420px;">
+                                    "@item.Comment"
+                                </div>
+                            </td>
+                            <td>
+                                @if (item.IsApproved)
+                                {
+                                    <span
+                                        class="badge bg-success text-white px-2 py-1 small rounded-pill d-inline-flex align-items-center gap-1 mb-1">
+                                        ✓ معتمد ومنشور
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span
+                                        class="badge bg-warning text-dark px-2 py-1 small rounded-pill d-inline-flex align-items-center gap-1 mb-1">
+                                        ⏳ بانتظار الاعتماد
+                                    </span>
+                                }
+                                <div class="text-muted" style="font-size: 0.76rem;">
+                                    @item.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd - hh:mm tt")
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <div class="d-flex justify-content-end gap-1 flex-wrap">
+                                    @if (!item.IsApproved)
+                                    {
+                                        <form asp-action="ApproveTestimonial" asp-route-id="@item.Id" method="post"
+                                              class="d-inline">
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-success px-2 py-1 fw-semibold d-inline-flex align-items-center gap-1"
+                                                    title="اعتماد ونشر التقييم في الموقع">
+                                                <span>✓</span> اعتماد
+                                            </button>
+                                        </form>
+                                    }
+                                    <form asp-action="DeleteTestimonial" asp-route-id="@item.Id" method="post"
+                                          class="d-inline delete-form">
+                                        <button type="button" class="btn btn-sm btn-outline-danger px-2 py-1 delete-review-btn"
+                                                title="حذف التقييم">
+                                            <span>🗑</span> حذف
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Live Search
+            const searchInput = document.getElementById('reviewSearchInput');
+            const rows = document.querySelectorAll('.review-row');
+
+            if (searchInput) {
+                searchInput.addEventListener('input', function (e) {
+                    const query = e.target.value.toLowerCase().trim();
+                    rows.forEach(row => {
+                        const text = row.getAttribute('data-search').toLowerCase();
+                        row.style.display = text.includes(query) ? '' : 'none';
+                    });
+                });
+            }
+
+            // SweetAlert2 Delete Confirmation
+            document.querySelectorAll('.delete-review-btn').forEach(btn => {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const form = this.closest('form');
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            title: 'هل أنت متأكد من حذف هذا التقييم؟',
+                            text: 'لن يظهر هذا التقييم في الموقع بعد الحذف.',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#dc3545',
+                            cancelButtonColor: '#6c757d',
+                            confirmButtonText: 'نعم، احذف',
+                            cancelButtonText: 'إلغاء'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                form.submit();
+                            }
+                        });
+                    } else {
+                        if (confirm('هل أنت متأكد من حذف هذا التقييم؟')) {
+                            form.submit();
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -9,6 +9,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Service> Services => Set<Service>();
     public DbSet<ServiceRequest> ServiceRequests => Set<ServiceRequest>();
     public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
+    public DbSet<Testimonial> Testimonials => Set<Testimonial>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

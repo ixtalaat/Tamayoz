@@ -321,72 +321,134 @@
     </div>
 </section>
 
-<!-- Student Testimonials -->
-<section class="py-5 px-4 p-md-5 rounded-4 bg-white border mb-5">
-    <div class="text-center mb-5">
-        <span class="eyebrow">آراء الطلاب</span>
-        <h2 class="display-6 fw-bold mt-1">تجارب حقيقية لطلاب وثقوا بنا</h2>
-        <p class="text-secondary mx-auto" style="max-width: 600px;">
-            نفخر بكوننا الشريك المفضل لآلاف الطلاب في رحلتهم الجامعية والدراسات العليا.
-        </p>
+<!-- Student Testimonials Section (Dynamic & Verified) -->
+<section id="testimonials" class="py-5 px-4 p-md-5 rounded-4 bg-white border mb-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-5">
+        <div>
+            <span class="eyebrow">آراء وتقييمات الطلاب</span>
+            <h2 class="display-6 fw-bold mt-1 mb-1">تجارب حقيقية لطلاب وثقوا بنا</h2>
+            <p class="text-secondary mb-0">نفخر بكوننا الشريك المفضل والموثوق لآلاف الطلاب والباحثين في مصر والوطن العربي.</p>
+        </div>
+        <button type="button" class="btn btn-outline-primary px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#submitReviewModal">
+            <span>✍️ أضف رأيك وتجربتك</span>
+        </button>
     </div>
+
+    @{
+        var dynamicReviews = ViewBag.Testimonials as IReadOnlyList<Tamayoz.Models.Testimonial> ?? new List<Tamayoz.Models.Testimonial>();
+    }
 
     <div class="row g-4">
-        <div class="col-lg-4">
-            <div class="testimonial-card p-4 rounded-4 bg-light border h-100 d-flex flex-column justify-content-between">
-                <div>
-                    <div class="stars mb-3 text-warning">★★★★★</div>
-                    <p class="text-secondary small mb-3" style="line-height: 1.8;">
-                        "تعاملت مع أكاديمية التميز في مشروع تخرجي بكلية الحاسبات. العمل البرمجي كان احترافي للغاية مع شرح مفصل لكل كود وتدريب على المناقشة، وحصلت على تقدير امتياز بفضل الله."
-                    </p>
-                </div>
-                <div class="d-flex align-items-center gap-3 pt-3 border-top">
-                    <div class="student-avatar-circle">ع</div>
-                    <div>
-                        <strong class="d-block text-dark small">عمر خ.</strong>
-                        <small class="text-muted">هندسة وحاسبات ومعلومات</small>
-                    </div>
-                </div>
-            </div>
-        </div>
+        @if (dynamicReviews.Any())
+        {
+            @foreach (var review in dynamicReviews)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="testimonial-card p-4 rounded-4 bg-light border h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="stars text-warning" style="letter-spacing: 2px;">
+                                    @for (int i = 0; i < review.Rating; i++)
+                                    {
+                                        <span>★</span>
+                                    }
+                                </div>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle small fw-medium">
+                                    ✓ تجربة موثقة
+                                </span>
+                            </div>
 
-        <div class="col-lg-4">
-            <div class="testimonial-card p-4 rounded-4 bg-light border h-100 d-flex flex-column justify-content-between">
-                <div>
-                    <div class="stars mb-3 text-warning">★★★★★</div>
-                    <p class="text-secondary small mb-3" style="line-height: 1.8;">
-                        "أفضل تجربة بحثية مررت بها. الدقة في المراجع والتنسيق والتحليل الإحصائي كانت استثنائية، والأهم هو التسليم قبل الموعد بيومين كاملين مما أتاح لي المراجعة بدقة."
-                    </p>
-                </div>
-                <div class="d-flex align-items-center gap-3 pt-3 border-top">
-                    <div class="student-avatar-circle">س</div>
-                    <div>
-                        <strong class="d-block text-dark small">سارة م.</strong>
-                        <small class="text-muted">باحثة ماجستير - إدارة أعمال</small>
-                    </div>
-                </div>
-            </div>
-        </div>
+                            <p class="text-secondary small mb-3" style="line-height: 1.8;">
+                                "@review.Comment"
+                            </p>
+                        </div>
 
-        <div class="col-lg-4">
-            <div class="testimonial-card p-4 rounded-4 bg-light border h-100 d-flex flex-column justify-content-between">
-                <div>
-                    <div class="stars mb-3 text-warning">★★★★★</div>
-                    <p class="text-secondary small mb-3" style="line-height: 1.8;">
-                        "سرعة في الرد عبر الواتساب واحترافية عالية في إعداد التكاليف والأسايمنت، وأي ملاحظة من المشرف قاموا بتعديلها فوراً دون أي تكاليف إضافية. أنصح بهم بشدة."
-                    </p>
-                </div>
-                <div class="d-flex align-items-center gap-3 pt-3 border-top">
-                    <div class="student-avatar-circle">م</div>
-                    <div>
-                        <strong class="d-block text-dark small">محمد ع.</strong>
-                        <small class="text-muted">كلية الحقوق</small>
+                        <div class="pt-3 border-top mt-auto d-flex align-items-center gap-3">
+                            <div class="student-avatar-circle">
+                                @(string.IsNullOrEmpty(review.StudentName) ? "ط" : review.StudentName.Substring(0, 1))
+                            </div>
+                            <div class="overflow-hidden">
+                                <strong class="d-block text-dark small text-truncate">@review.StudentName</strong>
+                                <small class="text-muted d-block text-truncate">@review.AcademicDegree</small>
+                                @if (!string.IsNullOrEmpty(review.ServiceName))
+                                {
+                                    <span class="badge bg-white text-secondary border mt-1" style="font-size: 0.7rem;">@review.ServiceName</span>
+                                }
+                            </div>
+                        </div>
                     </div>
                 </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5 text-muted">
+                <p>كن أول من يشارك تجربته مع أكاديمية التميّز!</p>
             </div>
-        </div>
+        }
     </div>
 </section>
+
+<!-- Submit Review Modal -->
+<div class="modal fade" id="submitReviewModal" tabindex="-1" aria-labelledby="submitReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header border-bottom p-4">
+                <div>
+                    <span class="eyebrow d-block mb-1">شاركنا رأيك</span>
+                    <h5 class="modal-title fw-bold text-dark" id="submitReviewModalLabel">تقييمك لتجربتك مع أكاديمية التميّز</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+            </div>
+
+            <form asp-controller="Home" asp-action="SubmitReview" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small">اسمك أو اللقب الأكاديمي <span class="text-danger">*</span></label>
+                        <input type="text" name="StudentName" class="form-control" placeholder="مثال: م. سارة أحمد / أحمد محمود" required maxlength="100" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small">الجامعة أو الدرجة والتخصص <span class="text-danger">*</span></label>
+                        <input type="text" name="AcademicDegree" class="form-control" placeholder="مثال: طالب ماجستير - جامعة عين شمس / كلية الحاسبات" required maxlength="150" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small">الخدمة أو التكليف المطلوب (اختياري)</label>
+                        <input type="text" name="ServiceName" class="form-control" placeholder="مثال: مشروع تخرج برمجة / بحث تخرج إدارة أعمال" maxlength="150" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small">التقييم بالنجوم <span class="text-danger">*</span></label>
+                        <select name="Rating" class="form-select">
+                            <option value="5" selected>⭐⭐⭐⭐⭐ (ممتاز جدًا - 5 نجوم)</option>
+                            <option value="4">⭐⭐⭐⭐ (جيد جدًا - 4 نجوم)</option>
+                            <option value="3">⭐⭐⭐ (جيد - 3 نجوم)</option>
+                            <option value="2">⭐⭐ (مقبول - نجمتان)</option>
+                            <option value="1">⭐ (نجمة واحدة)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small">نص رأيك وتجربتك معنا <span class="text-danger">*</span></label>
+                        <textarea name="Comment" class="form-control" rows="4" placeholder="اكتب تفاصيل تجربتك، مستوى الدقة، الالتزام بالمواعيد، وتعامل المشرف..." required maxlength="1000"></textarea>
+                    </div>
+
+                    <div class="p-3 bg-light rounded-3 border small text-muted d-flex align-items-center gap-2">
+                        <span>🛡️</span>
+                        <span>ملاحظة: لضمان مصداقية التقييمات، سيتم مراجعة تقييمك واعتماده من قبل الإدارة قبل نشره.</span>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-top p-3 d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary fw-bold px-4">إرسال التقييم الآن</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <!-- Final High-Impact CTA -->
 <section class="home-final-cta p-4 p-md-5 rounded-4 text-center text-white position-relative overflow-hidden mb-4">

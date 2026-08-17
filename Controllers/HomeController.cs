@@ -5,12 +5,28 @@ using Tamayoz.Services;
 
 namespace Tamayoz.Controllers;
 
-public class HomeController(IServiceCatalogService services) : Controller
+public class HomeController(IServiceCatalogService services, ITestimonialService testimonialsService) : Controller
 {
     public async Task<IActionResult> Index()
     {
         var featuredServices = await services.GetActiveAsync(6);
+        ViewBag.Testimonials = await testimonialsService.GetApprovedAsync(10);
         return View(featuredServices);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SubmitReview(Testimonial review)
+    {
+        if (!ModelState.IsValid)
+        {
+            TempData["Error"] = "يرجى كتابة الاسم، الدرجة/الجامعة، وتقييمك بشكل صحيح.";
+            return RedirectToAction(nameof(Index), "Home", null, "testimonials");
+        }
+
+        await testimonialsService.SubmitAsync(review);
+        TempData["Success"] = "شكرًا لمشاركتك رأيك! تم استلام تقييمك بنجاح وسيتم مراجعته واعتماده من قبل الإدارة قبل ظهوره في الموقع.";
+        return RedirectToAction(nameof(Index), "Home", null, "testimonials");
     }
 
     public IActionResult About()

@@ -13,6 +13,7 @@ public class AdminController(
     IServiceCatalogService catalog,
     IRequestManagementService requests,
     IContactMessageService messages,
+    ITestimonialService testimonials,
     UserManager<IdentityUser> userManager,
     SignInManager<IdentityUser> signInManager,
     IWebHostEnvironment webHostEnvironment) : Controller
@@ -181,6 +182,37 @@ public class AdminController(
     {
         var messagesList = await messages.GetAllAsync();
         return View(messagesList);
+    }
+
+    public async Task<IActionResult> Testimonials(bool? approved)
+    {
+        ViewBag.ApprovedFilter = approved;
+        var list = await testimonials.GetAllForAdminAsync(approved);
+        return View(list);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ApproveTestimonial(int id)
+    {
+        var isApproved = await testimonials.ApproveAsync(id);
+        if (isApproved)
+        {
+            TempData["Success"] = "تم اعتماد ونشر التقييم بنجاح ليظهر في واجهة الموقع.";
+        }
+        return RedirectToAction(nameof(Testimonials));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteTestimonial(int id)
+    {
+        var isDeleted = await testimonials.DeleteAsync(id);
+        if (isDeleted)
+        {
+            TempData["Success"] = "تم حذف التقييم بنجاح.";
+        }
+        return RedirectToAction(nameof(Testimonials));
     }
 
     [HttpPost]
