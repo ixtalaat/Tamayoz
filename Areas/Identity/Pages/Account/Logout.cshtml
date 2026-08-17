@@ -1,0 +1,27 @@
+@page
+@model Tamayoz.Areas.Identity.Pages.Account.LogoutModel
+@{
+    ViewData["Title"] = "تسجيل الخروج | أكاديمية التميز";
+}
+
+<div class="row justify-content-center py-5">
+    <div class="col-lg-6">
+        <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm text-center">
+            <div class="fs-1 mb-3">👋</div>
+            <span class="eyebrow">أكاديمية التميّز</span>
+            <h1 class="h3 fw-bold text-dark mt-2 mb-3">تم تسجيل الخروج بنجاح</h1>
+            <p class="text-secondary mb-4">
+                لقد تم إنهاء جلسة العمل الخاصة بك بأمان. يمكنك تسجيل الدخول مرة أخرى في أي وقت.
+            </p>
+
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a class="btn btn-primary px-4 py-2" asp-controller="Home" asp-action="Index">
+                    العودة للصفحة الرئيسية ←
+                </a>
+                <a class="btn btn-outline-secondary px-4 py-2" asp-area="Identity" asp-page="/Account/Login">
+                    تسجيل الدخول مجددًا
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
