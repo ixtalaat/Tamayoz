@@ -1,4 +1,66 @@
 @model Tamayoz.Models.ContactMessage
-@{ ViewData["Title"] = "تواصل معنا"; }
-<div class="form-shell mx-auto"><span class="eyebrow">نحن هنا لمساعدتك</span><h1>تواصل مع فريق تميز</h1><p class="text-secondary">أرسل رسالتك وسنرد عليك في أقرب وقت.</p>@if (TempData["Success"] is string success) { <div class="alert alert-success">@success</div> }<form method="post" class="row g-3"><div class="col-md-6"><label asp-for="Name">الاسم</label><input asp-for="Name" class="form-control"/><span asp-validation-for="Name"></span></div><div class="col-md-6"><label asp-for="Phone">رقم الهاتف (اختياري)</label><input asp-for="Phone" class="form-control" dir="ltr"/></div><div class="col-12"><label asp-for="Email">البريد الإلكتروني</label><input asp-for="Email" class="form-control" dir="ltr"/><span asp-validation-for="Email"></span></div><div class="col-12"><label asp-for="Message">رسالتك</label><textarea asp-for="Message" class="form-control" rows="5"></textarea><span asp-validation-for="Message"></span></div><div class="col-12"><button class="btn btn-primary px-4">إرسال الرسالة</button></div></form></div>
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+@{
+    ViewData["Title"] = "تواصل معنا | أكاديمية التميز";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm mb-5">
+            <div class="text-center mb-4 pb-2 border-bottom">
+                <span class="eyebrow">دائمًا في خدمتك</span>
+                <h1 class="h3 fw-bold text-dark mt-1 mb-2">تواصل مع فريق أكاديمية التميّز</h1>
+                <p class="text-secondary mb-0">أرسل استفسارك أو متطلباتك الأكاديمية وسيتواصل معك فريق الدعم المتخصص فورًا.</p>
+            </div>
+
+            @if (TempData["Success"] is string success)
+            {
+                <div class="alert alert-success alert-dismissible fade show rounded-3 border-0 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <div>@success</div>
+                    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <form method="post" class="row g-4">
+                <div class="col-md-6">
+                    <label asp-for="Name" class="form-label fw-semibold">الاسم بالكامل <span class="text-danger">*</span></label>
+                    <input asp-for="Name" class="form-control" placeholder="مثال: محمد أحمد" />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Phone" class="form-label fw-semibold">رقم الهاتف / واتساب</label>
+                    <input asp-for="Phone" class="form-control" dir="ltr" placeholder="010XXXXXXXX" />
+                    <span asp-validation-for="Phone" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Email" class="form-label fw-semibold">البريد الإلكتروني <span class="text-danger">*</span></label>
+                    <input asp-for="Email" class="form-control" dir="ltr" placeholder="name@example.com" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Message" class="form-label fw-semibold">نص الرسالة أو الاستفسار <span class="text-danger">*</span></label>
+                    <textarea asp-for="Message" class="form-control" rows="5" placeholder="اكتب تفاصيل استفسارك أو عنوان بحثك وسنرد عليك بأسرع وقت..."></textarea>
+                    <span asp-validation-for="Message" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <button type="submit" class="btn btn-primary px-5 py-2 fw-bold">
+                        إرسال الرسالة ←
+                    </button>
+
+                    <a href="https://wa.me/201020086745?text=مرحبًا%20أكاديمية%20التميز" target="_blank" rel="noopener noreferrer" class="btn btn-outline-success d-inline-flex align-items-center gap-2">
+                        <span>أو راسلنا واتساب مباشرة</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

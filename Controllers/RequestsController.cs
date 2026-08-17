@@ -3,20 +3,52 @@ using Tamayoz.Services;
 using Tamayoz.ViewModels;
 
 namespace Tamayoz.Controllers;
+
 public class RequestsController(IServiceCatalogService catalog, IRequestManagementService requests) : Controller
 {
     [HttpGet]
-    public async Task<IActionResult> Create(int serviceId) => await catalog.GetActiveByIdAsync(serviceId) is { } service
-        ? View(new ServiceRequestViewModel { ServiceId = service.Id, ServiceName = service.Name }) : NotFound();
+    public async Task<IActionResult> Create(int serviceId)
+    {
+        var service = await catalog.GetActiveByIdAsync(serviceId);
+        if (service is null)
+        {
+            return NotFound();
+        }
 
-    [HttpPost, ValidateAntiForgeryToken]
+        return View(new ServiceRequestViewModel
+        {
+            ServiceId = service.Id,
+            ServiceName = service.Name
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ServiceRequestViewModel model)
     {
-        if (!ModelState.IsValid) { model.ServiceName = (await catalog.GetActiveByIdAsync(model.ServiceId))?.Name; return View(model); }
-        if (await requests.CreateAsync(model)) return RedirectToAction(nameof(Confirmation));
+        if (!ModelState.IsValid)
+        {
+            var service = await catalog.GetActiveByIdAsync(model.ServiceId);
+            model.ServiceName = service?.Name;
+            return View(model);
+        }
+
+        var isCreated = await requests.CreateAsync(model);
+        if (isCreated)
+        {
+            return RedirectToAction(nameof(Confirmation));
+        }
+
         ModelState.AddModelError(nameof(model.ServiceId), "الخدمة غير متاحة حاليًا.");
-        model.ServiceName = (await catalog.GetActiveByIdAsync(model.ServiceId))?.Name;
+        var activeService = await catalog.GetActiveByIdAsync(model.ServiceId);
+        model.ServiceName = activeService?.Name;
         return View(model);
     }
-    public IActionResult Confirmation() => View();
+
+    [HttpGet]
+    public IActionResult Confirmation()
+    {
+        return View();
+    }
 }
+

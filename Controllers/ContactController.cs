@@ -3,15 +3,27 @@ using Tamayoz.Models;
 using Tamayoz.Services;
 
 namespace Tamayoz.Controllers;
+
 public class ContactController(IContactMessageService messages) : Controller
 {
-    public IActionResult Index() => View();
-    [HttpPost, ValidateAntiForgeryToken]
+    [HttpGet]
+    public IActionResult Index()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Index(ContactMessage model)
     {
-        if (!ModelState.IsValid) return View(model);
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
         await messages.CreateAsync(model);
         TempData["Success"] = "تم إرسال رسالتك بنجاح. سنتواصل معك قريبًا.";
         return RedirectToAction(nameof(Index));
     }
 }
+

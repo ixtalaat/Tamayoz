@@ -2,8 +2,24 @@ using Microsoft.AspNetCore.Mvc;
 using Tamayoz.Services;
 
 namespace Tamayoz.Controllers;
+
 public class ServicesController(IServiceCatalogService services) : Controller
 {
-    public async Task<IActionResult> Index() => View(await services.GetActiveAsync());
-    public async Task<IActionResult> Details(int id) => await services.GetActiveByIdAsync(id) is { } service ? View(service) : NotFound();
+    public async Task<IActionResult> Index()
+    {
+        var activeServices = await services.GetActiveAsync();
+        return View(activeServices);
+    }
+
+    public async Task<IActionResult> Details(int id)
+    {
+        var service = await services.GetActiveByIdAsync(id);
+        if (service is null)
+        {
+            return NotFound();
+        }
+
+        return View(service);
+    }
 }
+
