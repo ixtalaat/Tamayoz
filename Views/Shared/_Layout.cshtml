@@ -1,5 +1,10 @@
+@inject Tamayoz.Services.IServiceCatalogService FooterCatalogService
+@{
+    var footerServices = await FooterCatalogService.GetActiveAsync(6);
+}
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -199,44 +204,34 @@
                         </div>
                     </div>
 
-                    <!-- Column 3: Featured Services -->
+                    <!-- Column 3: Featured Services (Dynamic) -->
                     <div class="col-lg-3 col-md-6 col-6">
                         <div class="footer-links-block">
                             <h5 class="footer-heading">خدماتنا المميزة</h5>
                             <ul class="footer-nav-list">
-                                <li>
-                                    <a asp-controller="Services" asp-action="Index">
-                                        <span class="bullet">›</span> الأبحاث والتقارير الأكاديمية
-                                    </a>
-                                </li>
-                                <li>
-                                    <a asp-controller="Services" asp-action="Index">
-                                        <span class="bullet">›</span> مشاريع التخرج والأسايمنت
-                                    </a>
-                                </li>
-                                <li>
-                                    <a asp-controller="Services" asp-action="Index">
-                                        <span class="bullet">›</span> مشاريع البرمجة والشروحات
-                                    </a>
-                                </li>
-                                <li>
-                                    <a asp-controller="Services" asp-action="Index">
-                                        <span class="bullet">›</span> العروض التقديمية (PowerPoint)
-                                    </a>
-                                </li>
-                                <li>
-                                    <a asp-controller="Services" asp-action="Index">
-                                        <span class="bullet">›</span> رسائل الدراسات العليا
-                                    </a>
-                                </li>
-                                <li>
-                                    <a asp-controller="Services" asp-action="Index">
-                                        <span class="bullet">›</span> التصميم الهندسي والمونتاج
-                                    </a>
-                                </li>
+                                @if (footerServices.Any())
+                                {
+                                    @foreach (var footerService in footerServices)
+                                    {
+                                        <li>
+                                            <a asp-controller="Services" asp-action="Details" asp-route-id="@footerService.Id" title="@footerService.Name">
+                                                <span class="bullet">›</span> @footerService.Name
+                                            </a>
+                                        </li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li>
+                                        <a asp-controller="Services" asp-action="Index">
+                                            <span class="bullet">›</span> دليل كافة الخدمات
+                                        </a>
+                                    </li>
+                                }
                             </ul>
                         </div>
                     </div>
+
 
                     <!-- Column 4: Contact & Help Box -->
                     <div class="col-lg-3 col-md-6">
