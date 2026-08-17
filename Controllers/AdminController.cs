@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Tamayoz.Models;
 using Tamayoz.Services;
+using Tamayoz.ViewModels;
 
 namespace Tamayoz.Controllers;
 
@@ -10,8 +12,11 @@ public class AdminController(
     IAdminDashboardService dashboard,
     IServiceCatalogService catalog,
     IRequestManagementService requests,
-    IContactMessageService messages) : Controller
+    IContactMessageService messages,
+    UserManager<IdentityUser> userManager,
+    SignInManager<IdentityUser> signInManager) : Controller
 {
+
     public async Task<IActionResult> Index()
     {
         var dashboardData = await dashboard.GetAsync();
@@ -134,5 +139,53 @@ public class AdminController(
         await messages.DeleteAsync(id);
         return RedirectToAction(nameof(Messages));
     }
+
+    [HttpGet]
+    public IActionResult ChangePassword()
+    {
+        return View(new ChangePasswordViewModel());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var user = await userManager.GetUserAsync(User);
+        if (user is null)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        var changePasswordResult = await userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+        if (!changePasswordResult.Succeeded)
+        {
+            foreach (var error in changePasswordResult.Errors)
+            {
+                var localizedDescription = error.Code switch
+                {
+                    "PasswordMismatch" => "كلمة المرور الحالية غير صحيحة.",
+                    "PasswordTooShort" => "كلمة المرور قصيرة جدًا. يجب ألا تقل عن 6 أحرف.",
+                    "PasswordRequiresNonAlphanumeric" => "يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل.",
+                    "PasswordRequiresDigit" => "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل ('0'-'9').",
+                    "PasswordRequiresLower" => "يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل ('a'-'z').",
+                    "PasswordRequiresUpper" => "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل ('A'-'Z').",
+                    _ => error.Description
+                };
+                ModelState.AddModelError(string.Empty, localizedDescription);
+            }
+
+            return View(model);
+        }
+
+        await signInManager.RefreshSignInAsync(user);
+        TempData["Success"] = "تم تغيير كلمة المرور بنجاح.";
+        return RedirectToAction(nameof(ChangePassword));
+    }
 }
+
 
