@@ -1,0 +1,107 @@
+<!-- Reply to Message Modal Component -->
+<div class="modal fade" id="replyMessageModal" tabindex="-1" aria-labelledby="replyMessageModalLabel" aria-hidden="true"
+     dir="rtl">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-bottom bg-light rounded-top-4 py-3">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="panel-badge-icon bg-primary text-white"
+                         style="width: 34px; height: 34px; font-size: 0.95rem;">
+                        ✉️
+                    </div>
+                    <h5 class="modal-title fw-bold text-dark h6 mb-0" id="replyMessageModalLabel">الرد على رسالة الزائر
+                    </h5>
+                </div>
+                <button type="button" class="btn-close ms-0 me-auto" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-4">
+                <!-- Sender Info Card -->
+                <div class="p-3 rounded-3 bg-light border mb-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <span class="text-muted small d-block">المرسل:</span>
+                            <strong class="text-dark fs-6" id="modalSenderName">محمد أحمد</strong>
+                        </div>
+                        <span class="badge bg-white text-secondary border small" id="modalMessageDate"></span>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-between pt-2 border-top gap-2 flex-wrap">
+                        <div>
+                            <span class="text-muted small d-block">البريد الإلكتروني:</span>
+                            <code class="text-primary fw-bold" id="modalSenderEmail" dir="ltr">email@example.com</code>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2" id="modalCopyEmailBtn"
+                                title="نسخ البريد">
+                            <span>نسخ الإيميل</span> 📋
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Original Message Box -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-dark small mb-1">نص استفسار الزائر:</label>
+                    <div class="p-3 rounded-3 bg-white border small text-secondary" id="modalMessageText"
+                         style="max-height: 140px; overflow-y: auto; line-height: 1.7; white-space: pre-line;">
+                    </div>
+                </div>
+
+                <!-- Quick Channels Actions -->
+                <div>
+                    <label class="form-label fw-bold text-dark small mb-2 d-block">اختر طريقة الرد المناسبة لك:</label>
+
+                    <div class="d-grid gap-2">
+                        <!-- Gmail Direct Compose -->
+                        <a href="#" target="_blank" rel="noopener noreferrer"
+                           class="btn btn-outline-danger py-2 d-flex align-items-center justify-content-between px-3"
+                           id="modalGmailLink">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="fs-6">🔴</span>
+                                <span class="fw-semibold">فتح وتجهيز الرد عبر بريد Gmail</span>
+                            </div>
+                            <span class="small opacity-75">في تبويب جديد ↗</span>
+                        </a>
+
+                        <!-- Outlook / Hotmail Direct Compose -->
+                        <a href="#" target="_blank" rel="noopener noreferrer"
+                           class="btn btn-outline-primary py-2 d-flex align-items-center justify-content-between px-3"
+                           id="modalOutlookLink">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="fs-6">🔵</span>
+                                <span class="fw-semibold">فتح وتجهيز الرد عبر Outlook Web</span>
+                            </div>
+                            <span class="small opacity-75">في تبويب جديد ↗</span>
+                        </a>
+
+                        <!-- Default Desktop Mail Client -->
+                        <a href="#"
+                           class="btn btn-outline-secondary py-2 d-flex align-items-center justify-content-between px-3"
+                           id="modalMailtoLink">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="fs-6">💻</span>
+                                <span>برنامج البريد الافتراضي بالجهاز (Mailto)</span>
+                            </div>
+                            <span class="small opacity-75">تطبيق النظام ↗</span>
+                        </a>
+
+                        <!-- WhatsApp Direct Link (shown if phone exists) -->
+                        <a href="#" target="_blank" rel="noopener noreferrer"
+                           class="btn btn-success py-2 d-flex align-items-center justify-content-between px-3 d-none"
+                           id="modalWhatsAppLink">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="fs-6">💬</span>
+                                <span class="fw-bold">الرد الفوري عبر واتساب مباشرة</span>
+                            </div>
+                            <span class="small" id="modalWhatsAppPhone" dir="ltr"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer border-top bg-light rounded-bottom-4 py-2 px-4">
+                <button type="button" class="btn btn-sm btn-secondary px-3" data-bs-dismiss="modal">إغلاق</button>
+            </div>
+        </div>
+    </div>
+</div>

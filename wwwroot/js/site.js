@@ -123,3 +123,103 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
+
+// 4. Message Reply Modal Handler
+document.addEventListener('DOMContentLoaded', function () {
+    const modalEl = document.getElementById('replyMessageModal');
+    if (!modalEl) return;
+
+    let replyModalInstance = null;
+    let currentTargetEmail = '';
+
+    // Delegate click on reply buttons
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('[data-reply-email]');
+        if (!btn) return;
+
+        e.preventDefault();
+
+        const name = btn.getAttribute('data-reply-name') || 'الزائر';
+        const email = btn.getAttribute('data-reply-email') || '';
+        const phone = btn.getAttribute('data-reply-phone') || '';
+        const date = btn.getAttribute('data-reply-date') || '';
+        const message = btn.getAttribute('data-reply-message') || '';
+
+        currentTargetEmail = email;
+
+        // Set text
+        const senderNameEl = document.getElementById('modalSenderName');
+        const senderEmailEl = document.getElementById('modalSenderEmail');
+        const messageDateEl = document.getElementById('modalMessageDate');
+        const messageTextEl = document.getElementById('modalMessageText');
+
+        if (senderNameEl) senderNameEl.textContent = name;
+        if (senderEmailEl) senderEmailEl.textContent = email;
+        if (messageDateEl) messageDateEl.textContent = date;
+        if (messageTextEl) messageTextEl.textContent = message;
+
+        const subject = `الرد على استفسارك في أكاديمية التميز`;
+        const emailBody = `مرحبًا ${name}،\n\nبخصوص رسالتك:\n"${message}"\n\nنود إفادتك بـ: \n\nمع تحيات فريق أكاديمية التميز للخدمات الطلابية.\nhttps://tamayoz-academy.com`;
+
+        // Gmail link
+        const gmailLink = document.getElementById('modalGmailLink');
+        if (gmailLink) {
+            gmailLink.href = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+        }
+
+        // Outlook link
+        const outlookLink = document.getElementById('modalOutlookLink');
+        if (outlookLink) {
+            outlookLink.href = `https://outlook.live.com/mail/0/deeplink/compose?to=${encodeURIComponent(email)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+        }
+
+        // Mailto link
+        const mailtoLink = document.getElementById('modalMailtoLink');
+        if (mailtoLink) {
+            mailtoLink.href = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+        }
+
+        // WhatsApp link
+        const waLink = document.getElementById('modalWhatsAppLink');
+        const waPhoneEl = document.getElementById('modalWhatsAppPhone');
+        if (waLink) {
+            if (phone && phone.trim().length > 5) {
+                let cleanPhone = phone.replace(/\s+/g, '').replace(/-/g, '').replace(/\+/g, '');
+                if (cleanPhone.startsWith('01') && cleanPhone.length === 11) {
+                    cleanPhone = '20' + cleanPhone.substring(1);
+                } else if (!cleanPhone.startsWith('20') && cleanPhone.length === 10) {
+                    cleanPhone = '20' + cleanPhone;
+                }
+                const waText = `مرحبًا ${name}، نتواصل معك من أكاديمية التميز بخصوص استفسارك...`;
+                waLink.href = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waText)}`;
+                if (waPhoneEl) waPhoneEl.textContent = phone;
+                waLink.classList.remove('d-none');
+            } else {
+                waLink.classList.add('d-none');
+            }
+        }
+
+        // Show modal
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            replyModalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+            replyModalInstance.show();
+        }
+    });
+
+    // Copy email button
+    const copyBtn = document.getElementById('modalCopyEmailBtn');
+    if (copyBtn) {
+        copyBtn.addEventListener('click', function () {
+            if (!currentTargetEmail) return;
+            navigator.clipboard.writeText(currentTargetEmail).then(function () {
+                if (typeof toastr !== 'undefined') {
+                    toastr.success(`تم نسخ البريد الإلكتروني (${currentTargetEmail}) إلى الحافظة بنجاح`, 'تم النسخ ✓');
+                } else {
+                    alert('تم نسخ البريد بنجاح');
+                }
+            }).catch(function () {
+                prompt('انسخ البريد الإلكتروني:', currentTargetEmail);
+            });
+        });
+    }
+});

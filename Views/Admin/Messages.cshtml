@@ -119,9 +119,17 @@
                             <!-- Actions -->
                             <td>
                                 <div class="d-flex justify-content-center align-items-center gap-1">
-                                    <a href="mailto:@message.Email" class="btn btn-sm btn-outline-primary py-1 px-2" title="رد بالبريد">
+                                    <button type="button" class="btn btn-sm btn-outline-primary py-1 px-2 d-inline-flex align-items-center gap-1"
+                                            data-reply-name="@message.Name"
+                                            data-reply-email="@message.Email"
+                                            data-reply-phone="@message.Phone"
+                                            data-reply-date="@message.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd HH:mm")"
+                                            data-reply-message="@message.Message"
+                                            title="الرد على الرسالة">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                                    </a>
+                                        <span>رد</span>
+                                    </button>
+
 
                                     @if (!string.IsNullOrEmpty(cleanPhone))
                                     {
@@ -165,7 +173,11 @@
     }
 </div>
 
+<!-- Reply to Message Modal Component -->
+<partial name="_ReplyMessageModal" />
+
 @section Scripts {
+
     <script>
         // Real-time table filter for messages
         document.getElementById('messagesSearchInput')?.addEventListener('input', function (e) {
