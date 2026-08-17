@@ -311,7 +311,7 @@
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 if (typeof toastr !== 'undefined') {
-                    toastr.success('@Html.Raw(JavaScriptEncoder.Default.Encode(successMsg))', 'نجاح');
+                    toastr.success(@Json.Serialize(successMsg), 'تم بنجاح');
                 }
             });
         </script>
@@ -321,7 +321,7 @@
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 if (typeof toastr !== 'undefined') {
-                    toastr.error('@Html.Raw(JavaScriptEncoder.Default.Encode(errorMsg))', 'خطأ');
+                    toastr.error(@Json.Serialize(errorMsg), 'تنبيه خطأ');
                 }
             });
         </script>
@@ -331,7 +331,7 @@
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 if (typeof toastr !== 'undefined') {
-                    toastr.warning('@Html.Raw(JavaScriptEncoder.Default.Encode(warningMsg))', 'تنبيه');
+                    toastr.warning(@Json.Serialize(warningMsg), 'تنبيه');
                 }
             });
         </script>
@@ -341,7 +341,7 @@
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 if (typeof toastr !== 'undefined') {
-                    toastr.info('@Html.Raw(JavaScriptEncoder.Default.Encode(infoMsg))', 'معلومة');
+                    toastr.info(@Json.Serialize(infoMsg), 'معلومة');
                 }
             });
         </script>
