@@ -11,8 +11,10 @@
     <link rel="apple-touch-icon" sizes="180x180" href="~/apple-touch-icon.png" />
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
+
 
 <body class="d-flex flex-column min-vh-100">
     <header class="site-header">
@@ -305,8 +307,53 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @if (TempData["Success"] is string successMsg)
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (typeof toastr !== 'undefined') {
+                    toastr.success('@Html.Raw(JavaScriptEncoder.Default.Encode(successMsg))', 'نجاح');
+                }
+            });
+        </script>
+    }
+    @if (TempData["Error"] is string errorMsg)
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (typeof toastr !== 'undefined') {
+                    toastr.error('@Html.Raw(JavaScriptEncoder.Default.Encode(errorMsg))', 'خطأ');
+                }
+            });
+        </script>
+    }
+    @if (TempData["Warning"] is string warningMsg)
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (typeof toastr !== 'undefined') {
+                    toastr.warning('@Html.Raw(JavaScriptEncoder.Default.Encode(warningMsg))', 'تنبيه');
+                }
+            });
+        </script>
+    }
+    @if (TempData["Info"] is string infoMsg)
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (typeof toastr !== 'undefined') {
+                    toastr.info('@Html.Raw(JavaScriptEncoder.Default.Encode(infoMsg))', 'معلومة');
+                }
+            });
+        </script>
+    }
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>
 

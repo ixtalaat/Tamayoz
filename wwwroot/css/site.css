@@ -1145,3 +1145,85 @@ body {
   display: grid;
   place-items: center;
 }
+
+/* ==========================================================================
+   TOASTR & SWEETALERT2 CUSTOM BRAND STYLES
+   ========================================================================== */
+#toast-container {
+  direction: rtl;
+  font-family: Alexandria, system-ui, sans-serif !important;
+}
+
+#toast-container > .toast {
+  border-radius: 0.85rem !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+  opacity: 0.98 !important;
+  padding: 15px 18px 15px 50px !important;
+  font-size: 0.88rem !important;
+}
+
+#toast-container > .toast-success {
+  background-color: var(--primary) !important;
+}
+
+#toast-container > .toast-error {
+  background-color: #dc3545 !important;
+}
+
+#toast-container > .toast-warning {
+  background-color: #f1b84b !important;
+  color: #17212b !important;
+}
+
+#toast-container > .toast-info {
+  background-color: #0284c7 !important;
+}
+
+#toast-container > div {
+  width: 340px !important;
+}
+
+.toast-progress {
+  background-color: rgba(255, 255, 255, 0.5) !important;
+  height: 3.5px !important;
+}
+
+/* SweetAlert2 Popup RTL & Theme */
+div:where(.swal2-container) {
+  direction: rtl !important;
+  font-family: Alexandria, system-ui, sans-serif !important;
+}
+
+div:where(.swal2-container) .swal2-popup {
+  border-radius: 1.25rem !important;
+  padding: 2rem !important;
+  box-shadow: 0 20px 50px rgba(23, 95, 85, 0.15) !important;
+}
+
+div:where(.swal2-container) .swal2-title {
+  font-weight: 700 !important;
+  color: var(--ink) !important;
+  font-size: 1.35rem !important;
+}
+
+div:where(.swal2-container) .swal2-html-container {
+  color: #61726d !important;
+  font-size: 0.95rem !important;
+  line-height: 1.7 !important;
+}
+
+div:where(.swal2-container) .swal2-actions {
+  gap: 0.5rem !important;
+}
+
+div:where(.swal2-container) button.swal2-confirm {
+  border-radius: 0.75rem !important;
+  font-weight: 600 !important;
+  padding: 0.65rem 1.5rem !important;
+}
+
+div:where(.swal2-container) button.swal2-cancel {
+  border-radius: 0.75rem !important;
+  font-weight: 600 !important;
+  padding: 0.65rem 1.5rem !important;
+}
