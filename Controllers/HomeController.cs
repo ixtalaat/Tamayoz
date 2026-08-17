@@ -13,6 +13,11 @@ public class HomeController(IServiceCatalogService services) : Controller
         return View(featuredServices);
     }
 
+    public IActionResult About()
+    {
+        return View();
+    }
+
     public IActionResult Privacy()
     {
         return View();
