@@ -1,5 +1,46 @@
-bin/
-obj/
+# Build output
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio workspace and user files
 .vs/
+*.suo
 *.user
+*.userosscache
+*.sln.docstates
+*.rsuser
+*.sln.iml
+
+# Visual Studio Code and Rider
+.vscode/
+.idea/
+*.sln.DotSettings.user
+
+# Test and coverage output
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+!packages/build/
+*.nuget.props
+*.nuget.targets
+
+# Publish output
+publish/
+PublishOutput/
+
+# Local configuration and secrets
+appsettings.Development.local.json
 appsettings.Production.json
+secrets.json
+
+# OS files
+.DS_Store
+Thumbs.db
