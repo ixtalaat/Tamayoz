@@ -208,18 +208,38 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Copy email button
     const copyBtn = document.getElementById('modalCopyEmailBtn');
-    if (copyBtn) {
-        copyBtn.addEventListener('click', function () {
-            if (!currentTargetEmail) return;
-            navigator.clipboard.writeText(currentTargetEmail).then(function () {
-                if (typeof toastr !== 'undefined') {
-                    toastr.success(`تم نسخ البريد الإلكتروني (${currentTargetEmail}) إلى الحافظة بنجاح`, 'تم النسخ ✓');
-                } else {
-                    alert('تم نسخ البريد بنجاح');
-                }
-            }).catch(function () {
-                prompt('انسخ البريد الإلكتروني:', currentTargetEmail);
+            if (copyBtn) {
+            copyBtn.addEventListener('click', function () {
+                if (!currentTargetEmail) return;
+                navigator.clipboard.writeText(currentTargetEmail).then(function () {
+                    if (typeof toastr !== 'undefined') {
+                        toastr.success(`تم نسخ البريد الإلكتروني (${currentTargetEmail}) إلى الحافظة بنجاح`, 'تم النسخ ✓');
+                    } else {
+                        alert('تم نسخ البريد بنجاح');
+                    }
+                }).catch(function () {
+                    prompt('انسخ البريد الإلكتروني:', currentTargetEmail);
+                });
             });
+        }
+    });
+
+    // 5. Dark Mode / Theme Toggle Handler
+    document.addEventListener('DOMContentLoaded', function () {
+        const toggleBtn = document.getElementById('themeToggleBtn');
+        if (!toggleBtn) return;
+
+        toggleBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            document.documentElement.setAttribute('data-bs-theme', newTheme);
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('tamayoz_theme', newTheme);
+
+            if (typeof toastr !== 'undefined') {
+                toastr.info(newTheme === 'dark' ? 'تم تفعيل الوضع الليلي 🌙' : 'تم تفعيل الوضع النهاري ☀️', 'المظهر');
+            }
         });
-    }
-});
+    });
