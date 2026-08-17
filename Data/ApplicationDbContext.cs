@@ -9,4 +9,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Service> Services => Set<Service>();
     public DbSet<ServiceRequest> ServiceRequests => Set<ServiceRequest>();
     public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+        builder.Entity<Service>().Property(s => s.Price).HasPrecision(10, 2);
+    }
 }
