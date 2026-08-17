@@ -1,32 +1,57 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1b6b60" />
-      <stop offset="100%" stop-color="#0c2d27" />
+      <stop offset="0%" stop-color="#1a6d62" />
+      <stop offset="50%" stop-color="#14594f" />
+      <stop offset="100%" stop-color="#0b302a" />
     </linearGradient>
     <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ffe188" />
+      <stop offset="0%" stop-color="#ffe89e" />
+      <stop offset="50%" stop-color="#f5c258" />
+      <stop offset="100%" stop-color="#d99b26" />
+    </linearGradient>
+    <linearGradient id="goldGradSoft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
       <stop offset="100%" stop-color="#f1b84b" />
     </linearGradient>
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.3" />
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.35" />
     </filter>
   </defs>
 
-  <!-- Background Squircle -->
-  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#bgGrad)" stroke="#f1b84b" stroke-width="1.5" stroke-opacity="0.6" filter="url(#glow)" />
+  <!-- Background Squircle / Rounded Container -->
+  <rect x="24" y="24" width="464" height="464" rx="112" fill="url(#bgGrad)" stroke="#f1b84b" stroke-width="10" stroke-opacity="0.5" />
 
-  <!-- Graduation Cap / Academic Symbol -->
-  <!-- Cap Top Diamond -->
-  <polygon points="32,16 52,25 32,34 12,25" fill="url(#goldGrad)" />
-  
-  <!-- Cap Base / Skullcap -->
-  <path d="M20,29.5 L20,38 C20,43 44,43 44,38 L44,29.5 C39.5,32.5 24.5,32.5 20,29.5 Z" fill="#ffffff" opacity="0.95" />
+  <!-- Inner Subtle Ring -->
+  <rect x="42" y="42" width="428" height="428" rx="96" fill="none" stroke="rgba(255, 255, 255, 0.12)" stroke-width="3" />
 
-  <!-- Tassel -->
-  <path d="M48,27 L50,37 L47,38 L47,43 L51,43 L51,38 L48,37" fill="#f1b84b" />
+  <!-- Graduation Cap Masterpiece -->
+  <g filter="url(#shadow)">
+    <!-- Cap Top Diamond (Mortarboard) -->
+    <polygon points="256,120 424,204 256,288 88,204" fill="url(#goldGrad)" stroke="#ffffff" stroke-width="4" stroke-opacity="0.6" />
 
-  <!-- Golden Sparkle Dot -->
-  <circle cx="32" cy="49" r="3.5" fill="url(#goldGrad)" />
-  <path d="M32,43.5 L33.2,47.5 L37.5,49 L33.2,50.5 L32,54.5 L30.8,50.5 L26.5,49 L30.8,47.5 Z" fill="#ffffff" />
+    <!-- Cap Base / Skullcap -->
+    <path d="M152,246 L152,324 C152,374 360,374 360,324 L360,246 C320,272 192,272 152,246 Z" fill="#ffffff" />
+
+    <!-- Cap Ribbon / Stripe -->
+    <path d="M168,296 C208,320 304,320 344,296 L344,312 C304,336 208,336 168,312 Z" fill="url(#goldGrad)" />
+
+    <!-- Cap Button / Center Pin -->
+    <ellipse cx="256" cy="204" rx="14" ry="8" fill="#ffffff" />
+
+    <!-- Tassel String & Hanging Band -->
+    <path d="M256,204 C340,210 392,230 404,290" fill="none" stroke="#ffe89e" stroke-width="8" stroke-linecap="round" />
+    <!-- Tassel Fringe -->
+    <polygon points="404,286 394,360 414,360" fill="url(#goldGrad)" />
+    <circle cx="404" cy="360" r="10" fill="#f1b84b" />
+  </g>
+
+  <!-- Academic Star / Sparkle of Excellence (✦) -->
+  <g transform="translate(256, 412)">
+    <!-- Star Glow -->
+    <circle cx="0" cy="0" r="28" fill="#f1b84b" opacity="0.25" />
+    <!-- Star Shape -->
+    <path d="M 0,-32 Q 0,0 32,0 Q 0,0 0,32 Q 0,0 -32,0 Q 0,0 0,-32 Z" fill="url(#goldGradSoft)" />
+    <circle cx="0" cy="0" r="5" fill="#ffffff" />
+  </g>
 </svg>
