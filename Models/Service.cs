@@ -26,7 +26,6 @@ public class Service
     [StringLength(100, ErrorMessage = "المدة لا يجب أن تتجاوز 100 حرف")]
     public string EstimatedDuration { get; set; } = string.Empty;
 
-    [Url(ErrorMessage = "أدخل رابط صورة صحيح")]
     [StringLength(500)]
     public string? ImageUrl { get; set; }
 

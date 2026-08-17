@@ -79,8 +79,15 @@
                             <!-- Service Info -->
                             <td>
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="service-table-icon">
-                                        ✦
+                                    <div class="service-table-icon" style="overflow: hidden; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                        @if (!string.IsNullOrWhiteSpace(service.ImageUrl))
+                                        {
+                                            <img src="@service.ImageUrl" alt="@service.Name" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentElement.innerHTML='✦';" />
+                                        }
+                                        else
+                                        {
+                                            <span>✦</span>
+                                        }
                                     </div>
                                     <div>
                                         <strong class="d-block text-dark fs-6">@service.Name</strong>

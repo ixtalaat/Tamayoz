@@ -14,7 +14,8 @@ public class AdminController(
     IRequestManagementService requests,
     IContactMessageService messages,
     UserManager<IdentityUser> userManager,
-    SignInManager<IdentityUser> signInManager) : Controller
+    SignInManager<IdentityUser> signInManager,
+    IWebHostEnvironment webHostEnvironment) : Controller
 {
 
     public async Task<IActionResult> Index()
@@ -43,8 +44,17 @@ public class AdminController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateService(Service model)
+    public async Task<IActionResult> CreateService(Service model, IFormFile? imageFile)
     {
+        if (imageFile is not null && imageFile.Length > 0)
+        {
+            var savedPath = await SaveServiceImageAsync(imageFile);
+            if (savedPath is not null)
+            {
+                model.ImageUrl = savedPath;
+            }
+        }
+
         if (string.IsNullOrWhiteSpace(model.ImageUrl))
         {
             model.ImageUrl = null;
@@ -76,11 +86,20 @@ public class AdminController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> EditService(int id, Service model)
+    public async Task<IActionResult> EditService(int id, Service model, IFormFile? imageFile)
     {
         if (id != model.Id)
         {
             return NotFound();
+        }
+
+        if (imageFile is not null && imageFile.Length > 0)
+        {
+            var savedPath = await SaveServiceImageAsync(imageFile);
+            if (savedPath is not null)
+            {
+                model.ImageUrl = savedPath;
+            }
         }
 
         if (string.IsNullOrWhiteSpace(model.ImageUrl))
@@ -102,6 +121,37 @@ public class AdminController(
 
         TempData["Success"] = "تم تحديث الخدمة بنجاح.";
         return RedirectToAction(nameof(Services));
+    }
+
+    private async Task<string?> SaveServiceImageAsync(IFormFile? imageFile)
+    {
+        if (imageFile is null || imageFile.Length == 0)
+        {
+            return null;
+        }
+
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg" };
+        var extension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
+        if (!allowedExtensions.Contains(extension))
+        {
+            return null;
+        }
+
+        var uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "images", "services");
+        if (!Directory.Exists(uploadsFolder))
+        {
+            Directory.CreateDirectory(uploadsFolder);
+        }
+
+        var uniqueFileName = $"service-{Guid.NewGuid():N}{extension}";
+        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+        using (var fileStream = new FileStream(filePath, FileMode.Create))
+        {
+            await imageFile.CopyToAsync(fileStream);
+        }
+
+        return $"/images/services/{uniqueFileName}";
     }
 
 
