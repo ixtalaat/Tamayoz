@@ -42,14 +42,54 @@ body {
 }
 
 .navbar-brand {
-  font-size: 1.55rem;
-  font-weight: 700;
-  color: var(--ink);
   text-decoration: none;
+  transition: transform 0.2s ease;
 }
 
-.navbar-brand span {
-  color: var(--gold);
+.navbar-brand:hover {
+  transform: translateY(-1px);
+}
+
+.brand-logo-img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+.navbar-brand:hover .brand-logo-img {
+  transform: scale(1.05);
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.brand-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.brand-subtitle {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--primary);
+  letter-spacing: 0.01em;
+}
+
+.footer-logo .brand-title {
+  font-size: 1.45rem;
+  color: #ffffff;
+}
+
+.footer-logo .brand-subtitle {
+  font-size: 0.78rem;
+  color: var(--gold) !important;
 }
 
 .nav-link {

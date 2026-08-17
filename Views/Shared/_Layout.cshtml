@@ -24,8 +24,12 @@
 <body class="d-flex flex-column min-vh-100">
     <header class="site-header">
         <nav class="navbar navbar-expand-lg container">
-            <a class="navbar-brand" asp-controller="Home" asp-action="Index">
-                أكاديمية التميّز<span>.</span>
+            <a class="navbar-brand d-flex align-items-center gap-2" asp-controller="Home" asp-action="Index">
+                <img src="~/favicon.svg" alt="شعار أكاديمية التميز" width="40" height="40" class="brand-logo-img rounded-3 shadow-sm" asp-append-version="true" />
+                <span class="brand-text">
+                    <span class="brand-title">أكاديمية التميّز</span>
+                    <span class="brand-subtitle">للخدمات والحلول الأكاديمية</span>
+                </span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="تبديل القائمة">
                 <span class="navbar-toggler-icon"></span>
@@ -132,8 +136,12 @@
                     <!-- Column 1: Brand & About -->
                     <div class="col-lg-4 col-md-6">
                         <div class="footer-brand-block">
-                            <a class="footer-logo" asp-controller="Home" asp-action="Index">
-                                أكاديمية التميّز<span>.</span>
+                            <a class="footer-logo d-inline-flex align-items-center gap-2 mb-3" asp-controller="Home" asp-action="Index">
+                                <img src="~/favicon.svg" alt="شعار أكاديمية التميز" width="38" height="38" class="brand-logo-img rounded-3" asp-append-version="true" />
+                                <span class="brand-text text-start">
+                                    <span class="brand-title text-white">أكاديمية التميّز</span>
+                                    <span class="brand-subtitle text-warning small">للخدمات والحلول الأكاديمية</span>
+                                </span>
                             </a>
                             <p class="footer-description">
                                 شريكك الأكاديمي والمهني الموثوق لإعداد الأبحاث، مشاريع التخرج، البرمجة، والواجبات الجامعية بمستوى عالٍ من الدقة والاحترافية.
