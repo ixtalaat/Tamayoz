@@ -1,5 +1,412 @@
 @model IEnumerable<Tamayoz.Models.Service>
-@{ ViewData["Title"] = "أكاديمية التميز للخدمات الطلابية"; }
-<section class="hero rounded-4 p-5 mb-5 text-center"><span class="eyebrow">أكاديمية التميز للخدمات الطلابية</span><h1 class="display-4 fw-bold mt-3">حل مضمون ودقة في المواعيد.</h1><p class="lead mx-auto">خدمات أكاديمية ومهنية للطلاب — واضحة، دقيقة، وعلى بُعد طلب واحد.</p><div class="d-flex gap-3 justify-content-center flex-wrap"><a class="btn btn-primary btn-lg" asp-controller="Services" asp-action="Index">اكتشف خدماتنا</a><a class="btn btn-outline-primary btn-lg" href="https://wa.me/201020086745?text=مرحبًا%20أكاديمية%20التميز" target="_blank">تواصل واتساب</a></div></section>
-<section class="mb-5"><div class="d-flex justify-content-between align-items-center mb-4"><div><span class="eyebrow">خدمات مختارة</span><h2 class="mt-2">كل ما تحتاجه في مكان واحد</h2></div><a asp-controller="Services" asp-action="Index">عرض الكل ←</a></div><div class="row g-4">@foreach (var service in Model) { <div class="col-md-4"><article class="service-card h-100 p-4"><div class="service-icon">✦</div><h3 class="h5 mt-4">@service.Name</h3><p class="text-secondary">@service.ShortDescription</p><div class="small text-secondary mb-3">⏱ @service.EstimatedDuration</div><a class="stretched-link" asp-controller="Services" asp-action="Details" asp-route-id="@service.Id">تعرف أكثر</a></article></div> } @if (!Model.Any()) { <p class="text-secondary">ستظهر خدماتنا هنا قريبًا.</p> }</div></section>
-<section class="cta p-5 rounded-4 text-center"><h2>لديك سؤال قبل البدء؟</h2><p class="mb-4">فريق أكاديمية التميز جاهز لمساعدتك في اختيار الخدمة الأنسب.</p><a class="btn btn-light" asp-controller="Contact" asp-action="Index">تواصل معنا</a></section>
+@{
+    ViewData["Title"] = "الرئيسية | أكاديمية التميز للخدمات الطلابية والأكاديمية";
+}
+
+<!-- Hero Section -->
+<section class="home-hero-section position-relative overflow-hidden rounded-4 mb-5">
+    <div class="hero-bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+    </div>
+
+    <div class="container position-relative py-5 py-lg-6">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-8 mx-auto text-center">
+                <!-- Badges -->
+                <div class="d-inline-flex align-items-center gap-2 flex-wrap justify-content-center mb-3">
+                    <span class="hero-pill-badge">
+                        ✨ المنصة الأكاديمية الأولى والموثوقة
+                    </span>
+                    <span class="hero-status-badge">
+                        <span class="status-indicator"></span> متاحون لاستقبال طلبك 24/7
+                    </span>
+                </div>
+
+                <!-- Main Heading -->
+                <h1 class="display-4 fw-bold text-dark mb-3 hero-title">
+                    طريقك المضمون نحو <span class="highlight-text">التفوّق والتميّز</span> الأكاديمي
+                </h1>
+
+                <!-- Subheading -->
+                <p class="lead text-secondary mb-4 mx-auto hero-subtitle" style="max-width: 720px; line-height: 1.9;">
+                    حلول وبحوث جامعية، مشاريع تخرج، برمجيات، وتحليل إحصائي بإشراف نخبة من المتخصصين. دقة علمية فائقة، التزام صارم بالمواعيد، وأعمال أصلية 100% خالية من الانتحال.
+                </p>
+
+                <!-- Action Buttons -->
+                <div class="d-flex justify-content-center gap-3 flex-wrap mb-5">
+                    <a class="btn btn-primary btn-lg px-4 py-3 fw-bold d-inline-flex align-items-center gap-2 shadow" asp-controller="Services" asp-action="Index">
+                        <span>استكشف كافة الخدمات الأكاديمية</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    </a>
+
+                    <a class="btn btn-success btn-lg px-4 py-3 fw-bold d-inline-flex align-items-center gap-2 shadow-sm" href="https://wa.me/201020086745?text=مرحبًا%20أكاديمية%20التميز،%20أود%20طلب%20استشارة%20أكاديمية" target="_blank" rel="noopener noreferrer">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 1.67c2.2 0 4.26.86 5.82 2.42a8.176 8.176 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.44 0-2.85-.38-4.09-1.11l-.29-.17-3.13.82.84-3.05-.19-.3a8.216 8.216 0 0 1-1.26-4.43c0-4.54 3.7-8.24 8.24-8.24zm4.52 11.53c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.07-.39-2.03-1.25-.75-.67-1.26-1.5-1.41-1.75-.14-.25-.02-.39.11-.51.11-.11.25-.29.38-.44.13-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.13.17 1.78 2.72 4.31 3.81.6.26 1.07.42 1.44.54.61.19 1.16.17 1.6.1.49-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.06-.1-.23-.17-.48-.29z"/></svg>
+                        <span>تواصل واتساب مباشر</span>
+                    </a>
+
+                    <a class="btn btn-outline-dark btn-lg px-4 py-3 fw-semibold" asp-controller="Contact" asp-action="Index">
+                        طلب استشارة مجانية
+                    </a>
+                </div>
+
+                <!-- Trust Stats Counters -->
+                <div class="row g-3 justify-content-center pt-4 border-top border-secondary-subtle">
+                    <div class="col-6 col-md-3">
+                        <div class="hero-stat-card p-3 rounded-3 bg-white border">
+                            <div class="stat-number text-primary fw-bold fs-3">+2,500</div>
+                            <div class="stat-title text-secondary small fw-medium">طالب وباحث تمت خدمتهم</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="hero-stat-card p-3 rounded-3 bg-white border">
+                            <div class="stat-number text-success fw-bold fs-3">100%</div>
+                            <div class="stat-title text-secondary small fw-medium">التزام دقيق بالموعد</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="hero-stat-card p-3 rounded-3 bg-white border">
+                            <div class="stat-number text-warning-emphasis fw-bold fs-3">4.9 / 5.0</div>
+                            <div class="stat-title text-secondary small fw-medium">تقييم رضا الطلاب ⭐</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="hero-stat-card p-3 rounded-3 bg-white border">
+                            <div class="stat-number text-primary fw-bold fs-3">0%</div>
+                            <div class="stat-title text-secondary small fw-medium">نسبة انتحال (أعمال حصرية)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us / Value Pillars -->
+<section class="py-4 mb-5">
+    <div class="text-center mb-5">
+        <span class="eyebrow">لماذا نحن خيارك الأول؟</span>
+        <h2 class="display-6 fw-bold mt-1">ركائز الجودة في أكاديمية التميّز</h2>
+        <p class="text-secondary mx-auto" style="max-width: 600px;">
+            نلتزم بتقديم تجربة أكاديمية متكاملة تمنحك راحة البال والضمان الكامل لتفوقك الدراسي.
+        </p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="pillar-card p-4 rounded-4 bg-white border h-100 text-center">
+                <div class="pillar-icon-box mx-auto mb-3 bg-primary-subtle text-primary">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                </div>
+                <h3 class="h5 fw-bold text-dark mb-2">أصالة علمية وتدقيق متقدم</h3>
+                <p class="text-secondary small mb-0" style="line-height: 1.7;">
+                    أبحاث ومشاريع معدة خصيصاً لك، خالية تماماً من النسخ والانتحال، مع تدقيق لغوي وأكاديمي شامل.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="pillar-card p-4 rounded-4 bg-white border h-100 text-center">
+                <div class="pillar-icon-box mx-auto mb-3 bg-warning-subtle text-warning-emphasis">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                </div>
+                <h3 class="h5 fw-bold text-dark mb-2">التزام صارم بالمواعيد</h3>
+                <p class="text-secondary small mb-0" style="line-height: 1.7;">
+                    ندرك حساسية الديدلاين والمواعيد النهائية، لذا نحرص على تسليم عملك قبل الموعد المحدد لمراجعته بارتياح.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="pillar-card p-4 rounded-4 bg-white border h-100 text-center">
+                <div class="pillar-icon-box mx-auto mb-3 bg-info-subtle text-info-emphasis">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                </div>
+                <h3 class="h5 fw-bold text-dark mb-2">تعديلات ومتابعة مستمرة</h3>
+                <p class="text-secondary small mb-0" style="line-height: 1.7;">
+                    نرافقك خطوة بخطوة، ونقدم تعديلات وملاحظات مجانية بناءً على توجيهات أستاذ المادة حتى الاعتماد النهائي.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="pillar-card p-4 rounded-4 bg-white border h-100 text-center">
+                <div class="pillar-icon-box mx-auto mb-3 bg-success-subtle text-success">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </div>
+                <h3 class="h5 fw-bold text-dark mb-2">سرية وأمان تام</h3>
+                <p class="text-secondary small mb-0" style="line-height: 1.7;">
+                    بياناتك الشخصية وملفاتك الأكاديمية في أمان تام وسرية مطلقة بنسبة 100% ولا يتم مشاركتها أبداً.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Services Section -->
+<section class="py-4 mb-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
+        <div>
+            <span class="eyebrow">دليل الخدمات الأكاديمية</span>
+            <h2 class="display-6 fw-bold mt-1 mb-1">أبرز خدماتنا للطلاب والباحثين</h2>
+            <p class="text-secondary mb-0">اختر من بين باقة متنوعة من الخدمات المصممة لتلبية جميع احتياجاتك الدراسية.</p>
+        </div>
+        <a class="btn btn-outline-primary px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2" asp-controller="Services" asp-action="Index">
+            <span>عرض كافة الخدمات</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </a>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var service in Model)
+        {
+            var whatsappMsg = Uri.EscapeDataString($"مرحبًا أكاديمية التميز، أود طلب خدمة ({service.Name})");
+            <div class="col-md-6 col-lg-4">
+                <article class="service-card h-100 p-4 d-flex flex-column justify-content-between bg-white border rounded-4 shadow-sm">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="service-icon">✦</div>
+                            <span class="badge bg-light text-secondary border">
+                                ⏱ @service.EstimatedDuration
+                            </span>
+                        </div>
+
+                        <h3 class="h5 fw-bold text-dark mb-2">@service.Name</h3>
+                        <p class="text-secondary small mb-4" style="line-height: 1.7;">
+                            @service.ShortDescription
+                        </p>
+                    </div>
+
+                    <div class="pt-3 border-top mt-auto">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="small text-muted">السعر التقديري:</span>
+                            @if (service.Price.HasValue && service.Price.Value > 0)
+                            {
+                                <strong class="text-primary fs-6">@service.Price.Value.ToString("N0") <small>ج.م</small></strong>
+                            }
+                            else
+                            {
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle small">حسب المتطلبات</span>
+                            }
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <a class="btn btn-primary btn-sm py-2 flex-grow-1 fw-semibold" asp-controller="Requests" asp-action="Create" asp-route-serviceId="@service.Id">
+                                اطلب الآن ←
+                            </a>
+                            <a class="btn btn-outline-secondary btn-sm py-2 px-3" asp-controller="Services" asp-action="Details" asp-route-id="@service.Id" title="عرض التفاصيل">
+                                التفاصيل
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        }
+
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center py-5">
+                <p class="text-secondary">ستظهر الخدمات الأكاديمية هنا قريبًا.</p>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- Disciplines & Fields Covered -->
+<section class="py-5 px-4 p-md-5 rounded-4 bg-light border mb-5">
+    <div class="text-center mb-4">
+        <span class="eyebrow">تغطية شاملة</span>
+        <h2 class="display-6 fw-bold mt-1">التخصصات والمجالات الأكاديمية</h2>
+        <p class="text-secondary mx-auto" style="max-width: 620px;">
+            يضم فريقنا نخبة من الأساتذة والمبرمجين والباحثين المتخصصين في مختلف المجالات العلمية.
+        </p>
+    </div>
+
+    <div class="row g-3 justify-content-center">
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="discipline-card p-3 rounded-3 bg-white border text-center h-100">
+                <div class="discipline-icon mb-2">💻</div>
+                <strong class="d-block text-dark small">علوم الحاسب والبرمجة</strong>
+                <small class="text-muted" style="font-size: 0.72rem;">Python, C#, Java, AI</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="discipline-card p-3 rounded-3 bg-white border text-center h-100">
+                <div class="discipline-icon mb-2">📊</div>
+                <strong class="d-block text-dark small">إدارة الأعمال والمحاسبة</strong>
+                <small class="text-muted" style="font-size: 0.72rem;">تسويق، مالية، اقتصاد</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="discipline-card p-3 rounded-3 bg-white border text-center h-100">
+                <div class="discipline-icon mb-2">🩺</div>
+                <strong class="d-block text-dark small">العلوم الطبية والتمريض</strong>
+                <small class="text-muted" style="font-size: 0.72rem;">صيدلة، طب، صحة عامة</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="discipline-card p-3 rounded-3 bg-white border text-center h-100">
+                <div class="discipline-icon mb-2">📐</div>
+                <strong class="d-block text-dark small">العلوم الهندسية</strong>
+                <small class="text-muted" style="font-size: 0.72rem;">مدني، ميكانيكا، عمارة</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="discipline-card p-3 rounded-3 bg-white border text-center h-100">
+                <div class="discipline-icon mb-2">⚖️</div>
+                <strong class="d-block text-dark small">القانون والشريعة</strong>
+                <small class="text-muted" style="font-size: 0.72rem;">قانون عام، خاص، دولي</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="discipline-card p-3 rounded-3 bg-white border text-center h-100">
+                <div class="discipline-icon mb-2">📚</div>
+                <strong class="d-block text-dark small">الترجمة واللغات</strong>
+                <small class="text-muted" style="font-size: 0.72rem;">تدقيق لغوي، أبحاث أدبية</small>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works / 4 Steps -->
+<section class="py-4 mb-5">
+    <div class="text-center mb-5">
+        <span class="eyebrow">آلية العمل</span>
+        <h2 class="display-6 fw-bold mt-1">كيف تبدأ طلبك في 4 خطوات بسيطة؟</h2>
+        <p class="text-secondary mx-auto" style="max-width: 600px;">
+            خطوات ميسرة تضمن وصول متطلباتك بدقة والبدء الفوري بالتنفيذ.
+        </p>
+    </div>
+
+    <div class="row g-4 position-relative">
+        <div class="col-md-6 col-lg-3">
+            <div class="step-card p-4 rounded-4 bg-white border h-100 position-relative">
+                <div class="step-badge">1</div>
+                <h3 class="h6 fw-bold text-dark mt-3 mb-2">أرسل تفاصيل الطلب</h3>
+                <p class="text-secondary small mb-0" style="line-height: 1.7;">
+                    اختر الخدمة المطلوبة أو تواصل معنا عبر واتساب وأرسل عنوان البحث أو متطلبات المشروع والموعد النهائي.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="step-card p-4 rounded-4 bg-white border h-100 position-relative">
+                <div class="step-badge">2</div>
+                <h3 class="h6 fw-bold text-dark mt-3 mb-2">تأكيد الخطة والموعد</h3>
+                <p class="text-secondary small mb-0" style="line-height: 1.7;">
+                    يتواصل معك المشرف المختص لتأكيد تفاصيل العمل، تحديد السعر المناسب وتأكيد موعد التسليم الدقيق.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="step-card p-4 rounded-4 bg-white border h-100 position-relative">
+                <div class="step-badge">3</div>
+                <h3 class="h6 fw-bold text-dark mt-3 mb-2">التنفيذ والتدقيق الأكاديمي</h3>
+                <p class="text-secondary small mb-0" style="line-height: 1.7;">
+                    يبدأ المختص بإعداد العمل وفق أحدث المعايير العلمية مع الفحص الدقيق للاقتباس والانتحال.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="step-card p-4 rounded-4 bg-white border h-100 position-relative">
+                <div class="step-badge">4</div>
+                <h3 class="h6 fw-bold text-dark mt-3 mb-2">الاستلام والتعديل المجاني</h3>
+                <p class="text-secondary small mb-0" style="line-height: 1.7;">
+                    تستلم ملفك جاهزاً مع التزامنا الكامل بإجراء أي تعديلات مطلوبة من أستاذ المادة حتى الاعتماد النهائي.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Student Testimonials -->
+<section class="py-5 px-4 p-md-5 rounded-4 bg-white border mb-5">
+    <div class="text-center mb-5">
+        <span class="eyebrow">آراء الطلاب</span>
+        <h2 class="display-6 fw-bold mt-1">تجارب حقيقية لطلاب وثقوا بنا</h2>
+        <p class="text-secondary mx-auto" style="max-width: 600px;">
+            نفخر بكوننا الشريك المفضل لآلاف الطلاب في رحلتهم الجامعية والدراسات العليا.
+        </p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="testimonial-card p-4 rounded-4 bg-light border h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="stars mb-3 text-warning">★★★★★</div>
+                    <p class="text-secondary small mb-3" style="line-height: 1.8;">
+                        "تعاملت مع أكاديمية التميز في مشروع تخرجي بكلية الحاسبات. العمل البرمجي كان احترافي للغاية مع شرح مفصل لكل كود وتدريب على المناقشة، وحصلت على تقدير امتياز بفضل الله."
+                    </p>
+                </div>
+                <div class="d-flex align-items-center gap-3 pt-3 border-top">
+                    <div class="student-avatar-circle">ع</div>
+                    <div>
+                        <strong class="d-block text-dark small">عمر خ.</strong>
+                        <small class="text-muted">هندسة وحاسبات ومعلومات</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="testimonial-card p-4 rounded-4 bg-light border h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="stars mb-3 text-warning">★★★★★</div>
+                    <p class="text-secondary small mb-3" style="line-height: 1.8;">
+                        "أفضل تجربة بحثية مررت بها. الدقة في المراجع والتنسيق والتحليل الإحصائي كانت استثنائية، والأهم هو التسليم قبل الموعد بيومين كاملين مما أتاح لي المراجعة بدقة."
+                    </p>
+                </div>
+                <div class="d-flex align-items-center gap-3 pt-3 border-top">
+                    <div class="student-avatar-circle">س</div>
+                    <div>
+                        <strong class="d-block text-dark small">سارة م.</strong>
+                        <small class="text-muted">باحثة ماجستير - إدارة أعمال</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="testimonial-card p-4 rounded-4 bg-light border h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="stars mb-3 text-warning">★★★★★</div>
+                    <p class="text-secondary small mb-3" style="line-height: 1.8;">
+                        "سرعة في الرد عبر الواتساب واحترافية عالية في إعداد التكاليف والأسايمنت، وأي ملاحظة من المشرف قاموا بتعديلها فوراً دون أي تكاليف إضافية. أنصح بهم بشدة."
+                    </p>
+                </div>
+                <div class="d-flex align-items-center gap-3 pt-3 border-top">
+                    <div class="student-avatar-circle">م</div>
+                    <div>
+                        <strong class="d-block text-dark small">محمد ع.</strong>
+                        <small class="text-muted">كلية الحقوق</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Final High-Impact CTA -->
+<section class="home-final-cta p-4 p-md-5 rounded-4 text-center text-white position-relative overflow-hidden mb-4">
+    <div class="position-relative z-1 py-4">
+        <span class="badge bg-warning text-dark fw-bold px-3 py-2 rounded-pill mb-3">
+            ⚡ لا تدع الوقت يفوتك!
+        </span>
+        <h2 class="display-5 fw-bold mb-3">هل لديك بحث أو مشروع يقترب موعد تسليمه؟</h2>
+        <p class="lead text-white-50 mx-auto mb-4" style="max-width: 680px;">
+            تواصل معنا الآن وسيتولى فريقنا الأكاديمي المختص تقديم الدعم الكامل وضمان تفوقك وحصولك على أعلى الدرجات.
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a class="btn btn-warning btn-lg text-dark fw-bold px-5 py-3 shadow" asp-controller="Services" asp-action="Index">
+                ابدأ طلبك الآن ←
+            </a>
+            <a class="btn btn-outline-light btn-lg px-4 py-3 fw-bold d-inline-flex align-items-center gap-2" href="https://wa.me/201020086745?text=مرحبًا%20أكاديمية%20التميز،%20لدي%20طلب%20عاجل" target="_blank" rel="noopener noreferrer">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 1.67c2.2 0 4.26.86 5.82 2.42a8.176 8.176 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.44 0-2.85-.38-4.09-1.11l-.29-.17-3.13.82.84-3.05-.19-.3a8.216 8.216 0 0 1-1.26-4.43c0-4.54 3.7-8.24 8.24-8.24zm4.52 11.53c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.07-.39-2.03-1.25-.75-.67-1.26-1.5-1.41-1.75-.14-.25-.02-.39.11-.51.11-.11.25-.29.38-.44.13-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.13.17 1.78 2.72 4.31 3.81.6.26 1.07.42 1.44.54.61.19 1.16.17 1.6.1.49-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.06-.1-.23-.17-.48-.29z"/></svg>
+                <span>محادثة واتساب سريعة</span>
+            </a>
+        </div>
+    </div>
+</section>
+
