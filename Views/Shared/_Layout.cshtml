@@ -1,6 +1,14 @@
 @inject Tamayoz.Services.IServiceCatalogService FooterCatalogService
 @{
     var footerServices = await FooterCatalogService.GetActiveAsync(6);
+    var request = Context.Request;
+    var baseUrl = $"{request.Scheme}://{request.Host}";
+    var canonicalUrl = ViewData["CanonicalUrl"]?.ToString() ?? $"{baseUrl}{request.Path}";
+    var ogImageUrl = ViewData["OgImage"]?.ToString() ?? $"{baseUrl}/logo.svg";
+    var pageTitle = ViewData["Title"]?.ToString() ?? "أكاديمية التميّز للخدمات والحلول الأكاديمية";
+    var metaDescription = ViewData["MetaDescription"]?.ToString() ?? "منصتك الأكاديمية الأولى في مصر والوطن العربي لإعداد الأبحاث ورسائل الماجستير ومشاريع التخرج والحلول البرمجية بأعلى معايير الجودة والسرية.";
+    var metaKeywords = ViewData["MetaKeywords"]?.ToString() ?? "أكاديمية التميز, خدمات أكاديمية, مشاريع تخرج, رسائل ماجستير, بحوث جامعية, برمجة, تحليل إحصائي, أسايمنت, ترجمة وتدقيق";
+    var ogType = ViewData["OgType"]?.ToString() ?? "website";
 }
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -8,7 +16,55 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] | أكاديمية التميز</title>
+    <title>@pageTitle | أكاديمية التميّز</title>
+
+    <!-- Standard SEO Meta Tags -->
+    <meta name="description" content="@metaDescription" />
+    <meta name="keywords" content="@metaKeywords" />
+    <meta name="author" content="أكاديمية التميّز" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="@canonicalUrl" />
+
+    <!-- Open Graph (Facebook / WhatsApp / Telegram) -->
+    <meta property="og:site_name" content="أكاديمية التميّز" />
+    <meta property="og:title" content="@pageTitle | أكاديمية التميّز" />
+    <meta property="og:description" content="@metaDescription" />
+    <meta property="og:url" content="@canonicalUrl" />
+    <meta property="og:type" content="@ogType" />
+    <meta property="og:image" content="@ogImageUrl" />
+    <meta property="og:locale" content="ar_EG" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@pageTitle | أكاديمية التميّز" />
+    <meta name="twitter:description" content="@metaDescription" />
+    <meta name="twitter:image" content="@ogImageUrl" />
+
+    <!-- Schema.org JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org",
+      "@@type": "EducationalOrganization",
+      "name": "أكاديمية التميّز",
+      "alternateName": "Tamayoz Academy",
+      "url": "@baseUrl",
+      "logo": "@baseUrl/logo.svg",
+      "description": "منصة رائدة لتقديم الخدمات الأكاديمية، مشاريع التخرج، رسائل الماجستير والدكتوراه، والحلول البرمجية للطلاب والباحثين.",
+      "telephone": "+201020086745",
+      "email": "tamayoz.academy.eg@gmail.com",
+      "address": {
+        "@@type": "PostalAddress",
+        "addressCountry": "EG",
+        "addressLocality": "Cairo"
+      },
+      "sameAs": [
+        "https://t.me/TamayozAcademy",
+        "https://wa.me/201020086745"
+      ]
+    }
+    </script>
+
+    <!-- Favicons -->
     <link rel="icon" type="image/svg+xml" href="~/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="~/favicon.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="~/favicon-192.png" />

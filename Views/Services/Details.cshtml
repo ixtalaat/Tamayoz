@@ -1,6 +1,10 @@
 @model Tamayoz.Models.Service
 @{
     ViewData["Title"] = Model.Name;
+    ViewData["MetaDescription"] = Model.ShortDescription;
+    ViewData["MetaKeywords"] = $"{Model.Name}, طلب {Model.Name}, خدمات طلابية, مساعدة في {Model.Name}, أكاديمية التميز";
+    ViewData["OgType"] = "article";
+
     var whatsappMsg = Uri.EscapeDataString($"مرحبًا أكاديمية التميز، أود الاستفسار عن خدمة ({Model.Name}) وطلب تفاصيل عنها.");
 
     // Determine high-resolution contextual example image
@@ -18,8 +22,29 @@
                             ? "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80"
                             : "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1200&q=80");
 
+    ViewData["OgImage"] = exampleImageUrl;
     string fallbackSvg = "data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450' viewBox='0 0 800 450'%3E%3Crect fill='%23e6f2ee' width='800' height='450'/%3E%3Ctext fill='%23175f55' font-family='sans-serif' font-size='24' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle'%3Eأكاديمية التميز - نموذج توضيحي للخدمة%3C/text%3E%3C/svg%3E";
 }
+
+<!-- Structured Data for Service -->
+<script type="application/ld+json">
+{
+  "@@context": "https://schema.org",
+  "@@type": "Service",
+  "name": "@Model.Name",
+  "description": "@Model.ShortDescription",
+  "provider": {
+    "@@type": "EducationalOrganization",
+    "name": "أكاديمية التميّز"
+  },
+  "offers": {
+    "@@type": "Offer",
+    "priceCurrency": "EGP",
+    "price": "@(Model.Price.HasValue ? Model.Price.Value.ToString() : "0")",
+    "availability": "https://schema.org/InStock"
+  }
+}
+</script>
 
 <!-- Breadcrumb -->
 <nav aria-label="breadcrumb" class="mb-4">
