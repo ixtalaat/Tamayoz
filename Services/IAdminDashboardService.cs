@@ -1,2 +1,3 @@
+using Tamayoz.ViewModels;
 namespace Tamayoz.Services;
-public interface IAdminDashboardService { Task<IReadOnlyDictionary<string, int>> GetStatisticsAsync(); }
+public interface IAdminDashboardService { Task<AdminDashboardViewModel> GetAsync(); }
