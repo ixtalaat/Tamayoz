@@ -29,14 +29,9 @@ public static class AdminInitializer
                 throw new InvalidOperationException("Could not create the configured Admin user: " + string.Join("; ", result.Errors.Select(e => e.Description)));
             }
         }
-        else
-        {
-            user.PasswordHash = hasher.HashPassword(user, password);
-            user.SecurityStamp = Guid.NewGuid().ToString();
-            await users.UpdateAsync(user);
-        }
 
         if (!await users.IsInRoleAsync(user, "Admin")) await users.AddToRoleAsync(user, "Admin");
+
     }
 
 }

@@ -18,8 +18,9 @@ public class Service
     [StringLength(3000, ErrorMessage = "الوصف لا يجب أن يتجاوز 3000 حرف")]
     public string Description { get; set; } = string.Empty;
 
-    [Range(0, 999999, ErrorMessage = "السعر يجب أن يكون قيمة موجبة")]
+    [Range(typeof(decimal), "0", "99999999", ErrorMessage = "السعر يجب أن يكون قيمة موجبة (0 أو أكثر)")]
     public decimal? Price { get; set; }
+
 
     [Required(ErrorMessage = "المدة المتوقعة مطلوبة")]
     [StringLength(100, ErrorMessage = "المدة لا يجب أن تتجاوز 100 حرف")]

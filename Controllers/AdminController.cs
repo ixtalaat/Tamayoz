@@ -45,6 +45,12 @@ public class AdminController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateService(Service model)
     {
+        if (string.IsNullOrWhiteSpace(model.ImageUrl))
+        {
+            model.ImageUrl = null;
+            ModelState.Remove(nameof(model.ImageUrl));
+        }
+
         if (!ModelState.IsValid)
         {
             return View(model);
@@ -54,6 +60,7 @@ public class AdminController(
         TempData["Success"] = "تمت إضافة الخدمة بنجاح.";
         return RedirectToAction(nameof(Services));
     }
+
 
     [HttpGet]
     public async Task<IActionResult> EditService(int id)
@@ -76,6 +83,12 @@ public class AdminController(
             return NotFound();
         }
 
+        if (string.IsNullOrWhiteSpace(model.ImageUrl))
+        {
+            model.ImageUrl = null;
+            ModelState.Remove(nameof(model.ImageUrl));
+        }
+
         if (!ModelState.IsValid)
         {
             return View(model);
@@ -90,6 +103,7 @@ public class AdminController(
         TempData["Success"] = "تم تحديث الخدمة بنجاح.";
         return RedirectToAction(nameof(Services));
     }
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]

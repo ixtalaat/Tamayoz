@@ -47,13 +47,15 @@
             <h5 class="fw-bold text-dark mb-3">3. السعر وإعدادات النشر</h5>
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label asp-for="Price" class="form-label fw-semibold">السعر المبدئي (اختياري)</label>
+                    <label asp-for="Price" class="form-label fw-semibold">السعر التقديري (اختياري)</label>
                     <div class="input-group">
-                        <input asp-for="Price" type="number" step="1" min="0" class="form-control" placeholder="اتركه فارغًا إذا كان السعر حسب المتطلبات" />
+                        <input asp-for="Price" type="number" step="any" min="0" class="form-control" placeholder="اتركه فارغًا إذا كان السعر حسب المتطلبات" />
                         <span class="input-group-text bg-white">ج.م (جنيه مصري)</span>
                     </div>
-                    <span class="text-muted small">إذا تُرِك فارغًا، سيظهر للطالب "حسب متطلبات الطلب".</span>
+                    <span asp-validation-for="Price" class="text-danger small"></span>
+                    <span class="text-muted small d-block mt-1">إذا تُرِك فارغًا، سيظهر للطالب "حسب متطلبات الطلب".</span>
                 </div>
+
                 <div class="col-md-6">
                     <label asp-for="ImageUrl" class="form-label fw-semibold">رابط صورة أو أيقونة مخصصة (اختياري)</label>
                     <input asp-for="ImageUrl" class="form-control" dir="ltr" placeholder="https://example.com/image.jpg" />
