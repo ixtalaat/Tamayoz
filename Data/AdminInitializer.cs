@@ -9,7 +9,7 @@ public static class AdminInitializer
         var email = configuration["Admin:Email"] ?? "altamayozacademy640@gmail.com";
         var password = !string.IsNullOrWhiteSpace(configuration["Admin:Password"])
             ? configuration["Admin:Password"]!
-            : "Admin@Tamayoz2026!";
+            : "Admin@123";
 
         var roles = services.GetRequiredService<RoleManager<IdentityRole>>();
         var users = services.GetRequiredService<UserManager<IdentityUser>>();
