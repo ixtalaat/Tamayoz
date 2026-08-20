@@ -30,5 +30,5 @@ public class ContactSettings
     };
 
     public string Email { get; set; } = "altamayozacademy640@gmail.com";
-    public string Telegram { get; set; } = "TamayozAcademy";
+    public string Telegram { get; set; } = "sayedzayan";
 }
