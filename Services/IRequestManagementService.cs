@@ -10,4 +10,5 @@ public interface IRequestManagementService
     Task<IReadOnlyList<ServiceRequest>> GetByPhoneAsync(string phone);
     Task<IReadOnlyList<ServiceRequest>> GetAllAsync(RequestStatus? status);
     Task<bool> UpdateStatusAsync(int id, RequestStatus status);
+    Task<bool> DeleteAsync(int id);
 }

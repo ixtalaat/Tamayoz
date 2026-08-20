@@ -165,6 +165,7 @@
                                 <th>الخدمة المطلوبة</th>
                                 <th>التاريخ</th>
                                 <th>الحالة</th>
+                                <th style="width: 70px;" class="text-center">إجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -206,6 +207,14 @@
                                                 <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">ملغي</span>
                                                 break;
                                         }
+                                    </td>
+                                    <td class="text-center">
+                                        <form asp-action="DeleteRequest" method="post" class="d-inline delete-request-form">
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 btn-delete-request" title="حذف هذا الطلب">
+                                                <span>🗑️</span>
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             }
@@ -286,5 +295,36 @@
 
 <!-- Reply Modal Component -->
 <partial name="_ReplyMessageModal" />
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.btn-delete-request').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const form = this.closest('form');
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'هل أنت تأكد من حذف هذا الطلب؟',
+                        text: 'لن تتمكن من استرجاع بيانات هذا الطلب بعد الحذف!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'نعم، احذف الطلب',
+                        cancelButtonText: 'إلغاء'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                } else {
+                    if (confirm("هل أنت تأكد من حذف هذا الطلب؟")) {
+                        form.submit();
+                    }
+                }
+            });
+        });
+    </script>
+}
 
 

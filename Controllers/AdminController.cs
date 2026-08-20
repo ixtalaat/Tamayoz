@@ -179,6 +179,23 @@ public class AdminController(
         return RedirectToAction(nameof(Requests));
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteRequest(int id)
+    {
+        var isDeleted = await requests.DeleteAsync(id);
+        if (isDeleted)
+        {
+            TempData["Success"] = "تم حذف طلب الخدمة بنجاح.";
+        }
+        else
+        {
+            TempData["Error"] = "لم يتم العثور على الطلب المراد حذفه.";
+        }
+
+        return RedirectToAction(nameof(Requests));
+    }
+
     public async Task<IActionResult> Messages()
     {
         var messagesList = await messages.GetAllAsync();

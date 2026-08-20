@@ -128,6 +128,36 @@ public class RequestManagementService(ApplicationDbContext db, IWebHostEnvironme
         return true;
     }
 
+    public async Task<bool> DeleteAsync(int id)
+    {
+        var request = await db.ServiceRequests.FindAsync(id);
+        if (request is null)
+        {
+            return false;
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.AttachmentPath))
+        {
+            try
+            {
+                var relativePath = request.AttachmentPath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
+                var fullPath = Path.Combine(webHostEnvironment.WebRootPath, relativePath);
+                if (File.Exists(fullPath))
+                {
+                    File.Delete(fullPath);
+                }
+            }
+            catch
+            {
+                // Ignore file deletion errors to ensure entity is deleted
+            }
+        }
+
+        db.ServiceRequests.Remove(request);
+        await db.SaveChangesAsync();
+        return true;
+    }
+
     private async Task<string> GenerateUniqueTrackingCodeAsync()
     {
         while (true)
