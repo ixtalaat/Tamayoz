@@ -50,6 +50,9 @@ builder.Services.AddResponseCompression(options =>
 // 5. Health Checks
 builder.Services.AddHealthChecks();
 
+// Contact Settings
+builder.Services.Configure<Tamayoz.Models.ContactSettings>(builder.Configuration.GetSection("ContactSettings"));
+
 // 6. Application Domain Services
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IServiceCatalogService, ServiceCatalogService>();

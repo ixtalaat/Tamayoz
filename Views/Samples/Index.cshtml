@@ -1,4 +1,5 @@
 @model IReadOnlyList<Tamayoz.Models.WorkSample>
+@inject Microsoft.Extensions.Options.IOptions<Tamayoz.Models.ContactSettings> ContactSettingsOptions
 @{
     ViewData["Title"] = "معرض نماذج الأعمال والعينات الأكاديمية";
     ViewData["MetaDescription"] = "استعرض نماذج وعينات حقيقية من أبحاث، مشاريع تخرج، وعروض تقديمية نفذتها أكاديمية التميز بجودة وتوثيق علمي معتمد.";
@@ -6,6 +7,8 @@
 
     var currentCategory = ViewBag.CurrentCategory as string ?? "الكل";
     var categories = ViewBag.Categories as IReadOnlyList<string> ?? new List<string>();
+    var contactSettings = ContactSettingsOptions.Value;
+    var eg = contactSettings.Egypt;
 }
 
 <!-- Breadcrumb -->
@@ -122,17 +125,35 @@
                             <div class="d-flex gap-2 flex-wrap pt-3 border-top justify-content-between align-items-center">
                                 @if (!string.IsNullOrEmpty(sample.FileUrl))
                                 {
-                                    <a href="@sample.FileUrl" target="_blank" download
-                                       class="btn btn-sm btn-outline-primary fw-semibold d-inline-flex align-items-center gap-1">
-                                        <span>📥</span> تحميل العينة
-                                    </a>
+                                    <div class="d-flex gap-1 align-items-center flex-wrap">
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-primary fw-semibold d-inline-flex align-items-center gap-1 btn-preview-sample"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#samplePreviewModal"
+                                                data-title="@sample.Title"
+                                                data-category="@sample.Category"
+                                                data-desc="@sample.Description"
+                                                data-fileurl="@sample.FileUrl"
+                                                data-filetype="@sample.FileType">
+                                            <span>👁️</span> عرض العينة
+                                        </button>
+                                        <a href="@sample.FileUrl" target="_blank" rel="noopener noreferrer"
+                                           class="btn-external-link" title="فتح الملف في نافذة مستقلة جديدة">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                                <polyline points="15 3 21 3 21 9"></polyline>
+                                                <line x1="10" y1="14" x2="21" y2="3"></line>
+                                            </svg>
+                                            <span>رابط خارجي</span>
+                                        </a>
+                                    </div>
                                 }
                                 else
                                 {
                                     <span class="text-muted small">🔒 عينة استعراضية داخلية</span>
                                 }
 
-                                <a href="https://wa.me/201020086745?text=@whatsappSampleMsg" target="_blank"
+                                <a href="https://wa.me/@eg.WhatsApp?text=@whatsappSampleMsg" target="_blank"
                                    rel="noopener noreferrer"
                                    class="btn btn-sm btn-primary fw-bold d-inline-flex align-items-center gap-1">
                                     <span>طلب عمل مماثل</span>
@@ -157,9 +178,108 @@
             <a asp-controller="Services" asp-action="Index" class="btn btn-light text-primary fw-bold px-4 py-2">
                 طلب خدمة جديدة الآن ←
             </a>
-            <a href="https://wa.me/201020086745?text=مرحبًا%20أكاديمية%20التميز،%20أود%20طلب%20خدمة%20أكاديمية"
+            <a href="https://wa.me/@eg.WhatsApp?text=مرحبًا%20أكاديمية%20التميز،%20أود%20طلب%20خدمة%20أكاديمية"
                target="_blank" rel="noopener noreferrer" class="btn btn-outline-light fw-semibold px-4 py-2">
                 استفسار مباشر عبر واتساب
             </a>
         </div>
     </div>
+
+<!-- Interactive Sample Display / Preview Modal -->
+<div class="modal fade" id="samplePreviewModal" tabindex="-1" aria-labelledby="samplePreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+            <div class="modal-header border-bottom bg-light px-4 py-3 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="fs-4">👁️</span>
+                    <div>
+                        <h5 class="modal-title fw-bold text-dark mb-0" id="samplePreviewModalLabel">معاينة النموذج</h5>
+                        <span class="badge bg-primary rounded-pill small mt-1" id="modalSampleCategory"></span>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+            </div>
+            <div class="modal-body p-0 bg-dark bg-opacity-10 position-relative d-flex flex-column align-items-center justify-content-center" style="min-height: 550px;">
+                <div id="modalLoadingSpinner" class="position-absolute text-center py-5 z-1">
+                    <div class="spinner-border text-primary mb-2" role="status">
+                        <span class="visually-hidden">جاري التحميل...</span>
+                    </div>
+                    <p class="small text-muted mb-0">جاري عرض محتوى العينة...</p>
+                </div>
+                <iframe id="modalPreviewFrame" class="w-100 h-100 border-0 position-relative z-2" style="min-height: 550px; background-color: #ffffff;" src="about:blank"></iframe>
+            </div>
+            <div class="modal-footer border-top bg-light px-4 py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <p class="text-secondary small mb-0 text-truncate" style="max-width: 500px;" id="modalSampleDescription"></p>
+                <div class="d-flex gap-2">
+                    <a id="modalOpenNewTabBtn" href="#" target="_blank" rel="noopener noreferrer" class="btn-external-link px-3 py-2">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                        </svg>
+                        <span>فتح العينة في نافذة مستقلة</span>
+                    </a>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">إغلاق</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const previewButtons = document.querySelectorAll('.btn-preview-sample');
+            const modalTitle = document.getElementById('samplePreviewModalLabel');
+            const modalCategory = document.getElementById('modalSampleCategory');
+            const modalDesc = document.getElementById('modalSampleDescription');
+            const modalFrame = document.getElementById('modalPreviewFrame');
+            const modalNewTabBtn = document.getElementById('modalOpenNewTabBtn');
+            const loadingSpinner = document.getElementById('modalLoadingSpinner');
+
+            previewButtons.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const title = this.getAttribute('data-title') || 'معاينة نموذج العمل';
+                    const category = this.getAttribute('data-category') || '';
+                    const desc = this.getAttribute('data-desc') || '';
+                    const fileUrl = this.getAttribute('data-fileurl') || '';
+                    const fileType = (this.getAttribute('data-filetype') || '').toLowerCase();
+
+                    if (modalTitle) modalTitle.textContent = title;
+                    if (modalCategory) modalCategory.textContent = category;
+                    if (modalDesc) modalDesc.textContent = desc;
+
+                    if (loadingSpinner) loadingSpinner.style.display = 'block';
+
+                    if (modalNewTabBtn) {
+                        modalNewTabBtn.href = fileUrl;
+                    }
+
+                    if (modalFrame) {
+                        modalFrame.onload = function () {
+                            if (loadingSpinner) loadingSpinner.style.display = 'none';
+                        };
+
+                        if (fileType.includes('pdf') || fileUrl.endsWith('.pdf')) {
+                            modalFrame.src = fileUrl;
+                        } else if (fileType.includes('jpg') || fileType.includes('png') || fileType.includes('image') || fileUrl.match(/\.(jpeg|jpg|png|gif|webp)$/i)) {
+                            modalFrame.src = fileUrl;
+                        } else if (fileType.includes('doc') || fileType.includes('ppt') || fileType.includes('xls')) {
+                            const absoluteUrl = window.location.origin + fileUrl;
+                            modalFrame.src = 'https://docs.google.com/viewer?url=' + encodeURIComponent(absoluteUrl) + '&embedded=true';
+                        } else {
+                            modalFrame.src = fileUrl;
+                        }
+                    }
+                });
+            });
+
+            const previewModalEl = document.getElementById('samplePreviewModal');
+            if (previewModalEl) {
+                previewModalEl.addEventListener('hidden.bs.modal', function () {
+                    if (modalFrame) modalFrame.src = 'about:blank';
+                });
+            }
+        });
+    </script>
+}

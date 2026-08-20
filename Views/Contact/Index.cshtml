@@ -1,8 +1,12 @@
 @model Tamayoz.Models.ContactMessage
+@inject Microsoft.Extensions.Options.IOptions<Tamayoz.Models.ContactSettings> ContactSettingsOptions
 @{
     ViewData["Title"] = "تواصل معنا - استفسارات وخدمات الدعم الأكاديمي";
-    ViewData["MetaDescription"] = "تواصل مع فريق أكاديمية التميز للاستفسار عن الأبحاث، مشاريع التخرج والحلول البرمجية عبر الواتساب أو الهاتف أو نموذج المراسلة.";
-    ViewData["MetaKeywords"] = "تواصل مع أكاديمية التميز, رقم واتساب أكاديمية التميز, استفسار أبحاث, طلب مشروع تخرج";
+    ViewData["MetaDescription"] = "تواصل مع فريق أكاديمية التميز للاستفسار عن الأبحاث، مشاريع التخرج والحلول البرمجية عبر الواتساب أو الهاتف في مصر والسعودية.";
+    ViewData["MetaKeywords"] = "تواصل مع أكاديمية التميز, رقم واتساب أكاديمية التميز, واتساب مصر, واتساب السعودية, استفسار أبحاث";
+    var contact = ContactSettingsOptions.Value;
+    var eg = contact.Egypt;
+    var sa = contact.Saudi;
 }
 
 <div class="row justify-content-center">
@@ -53,11 +57,59 @@
                         إرسال الرسالة ←
                     </button>
 
-                    <a href="https://wa.me/201020086745?text=مرحبًا%20أكاديمية%20التميز" target="_blank" rel="noopener noreferrer" class="btn btn-outline-success d-inline-flex align-items-center gap-2">
-                        <span>أو راسلنا واتساب مباشرة</span>
-                    </a>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="https://wa.me/@eg.WhatsApp?text=مرحبًا%20أكاديمية%20التميز" target="_blank" rel="noopener noreferrer" class="btn btn-outline-success d-inline-flex align-items-center gap-2">
+                            <span>🇪🇬 واتساب مصر</span>
+                        </a>
+                        <a href="https://wa.me/@sa.WhatsApp?text=مرحبًا%20أكاديمية%20التميز" target="_blank" rel="noopener noreferrer" class="btn btn-outline-success d-inline-flex align-items-center gap-2">
+                            <span>🇸🇦 واتساب السعودية</span>
+                        </a>
+                    </div>
                 </div>
             </form>
+        </div>
+
+        <!-- Quick Direct Contact Cards for Egypt & Saudi Arabia -->
+        <div class="row g-4 mb-5">
+            <!-- Egypt Branch -->
+            <div class="col-md-6">
+                <div class="bg-white p-4 rounded-4 border shadow-sm text-center h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="fs-1 mb-2">🇪🇬</div>
+                        <h3 class="h5 fw-bold text-dark mb-1">فرع مصر</h3>
+                        <p class="text-muted small mb-3">دعم وتواصل مباشر لطلاب الجامعات المصرية والأكاديميات</p>
+                        <p class="fw-bold text-dark fs-6 mb-3" dir="ltr">@eg.DisplayPhone</p>
+                    </div>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <a href="https://wa.me/@eg.WhatsApp?text=مرحبًا%20أكاديمية%20التميز" target="_blank" rel="noopener noreferrer" class="btn btn-success btn-sm px-3 d-inline-flex align-items-center gap-1">
+                            <span>واتساب</span>
+                        </a>
+                        <a href="tel:@eg.Phone" class="btn btn-outline-primary btn-sm px-3 d-inline-flex align-items-center gap-1">
+                            <span>اتصال</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Saudi Arabia Branch -->
+            <div class="col-md-6">
+                <div class="bg-white p-4 rounded-4 border shadow-sm text-center h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="fs-1 mb-2">🇸🇦</div>
+                        <h3 class="h5 fw-bold text-dark mb-1">فرع المملكة العربية السعودية</h3>
+                        <p class="text-muted small mb-3">دعم مخصص لطلاب الجامعات والباحثين في المملكة</p>
+                        <p class="fw-bold text-dark fs-6 mb-3" dir="ltr">@sa.DisplayPhone</p>
+                    </div>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <a href="https://wa.me/@sa.WhatsApp?text=مرحبًا%20أكاديمية%20التميز" target="_blank" rel="noopener noreferrer" class="btn btn-success btn-sm px-3 d-inline-flex align-items-center gap-1">
+                            <span>واتساب</span>
+                        </a>
+                        <a href="tel:@sa.Phone" class="btn btn-outline-primary btn-sm px-3 d-inline-flex align-items-center gap-1">
+                            <span>اتصال</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -125,9 +125,9 @@
                                     <div class="d-flex justify-content-end gap-1 flex-wrap">
                                         @if (!string.IsNullOrEmpty(item.FileUrl))
                                         {
-                                            <a href="@item.FileUrl" target="_blank" download
-                                               class="btn btn-sm btn-outline-secondary px-2 py-1" title="معاينة الملف">
-                                                <span>📥</span>
+                                            <a href="@item.FileUrl" target="_blank"
+                                               class="btn btn-sm btn-outline-secondary px-2 py-1" title="عرض/معاينة الملف">
+                                                <span>👁️</span>
                                             </a>
                                         }
                                         <a asp-action="EditSample" asp-route-id="@item.Id"
