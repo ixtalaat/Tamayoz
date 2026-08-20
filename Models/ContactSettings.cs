@@ -29,6 +29,6 @@ public class ContactSettings
         WhatsApp = "966564369313"
     };
 
-    public string Email { get; set; } = "tamayoz.academy.eg@gmail.com";
+    public string Email { get; set; } = "altamayozacademy640@gmail.com";
     public string Telegram { get; set; } = "TamayozAcademy";
 }

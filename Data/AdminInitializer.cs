@@ -6,7 +6,7 @@ public static class AdminInitializer
 {
     public static async Task InitializeAsync(IServiceProvider services, IConfiguration configuration)
     {
-        var email = configuration["Admin:Email"] ?? "admin@tamayoz.com";
+        var email = configuration["Admin:Email"] ?? "altamayozacademy640@gmail.com";
         var password = !string.IsNullOrWhiteSpace(configuration["Admin:Password"])
             ? configuration["Admin:Password"]!
             : "Admin@Tamayoz2026!";
